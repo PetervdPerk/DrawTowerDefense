@@ -5,6 +5,7 @@ gameUI::gameUI(View* gameView,game* game_obj,QObject *parent) :
 {
     this->gameView = gameView;
     this->game_obj = game_obj;
+    //TODO show status of waves, timer, health, money
 }
 
 void gameUI::update(){
