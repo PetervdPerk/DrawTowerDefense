@@ -17,10 +17,10 @@ CONFIG += c++11
 SOURCES += main.cpp\
         mainwindow.cpp \
     view.cpp \
+    enemy/baseenemy.cpp \
     map/line.cpp \
     tower/basetower.cpp \
     tower/bullet.cpp \
-    enemy/baseenemy.cpp \
     enemy/enemyhelper.cpp \
     game.cpp \
     wavemanager.cpp \
