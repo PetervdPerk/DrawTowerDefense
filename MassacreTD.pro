@@ -20,21 +20,23 @@ SOURCES += main.cpp\
     enemy/baseenemy.cpp \
     map/line.cpp \
     tower/basetower.cpp \
-    tower/bullet.cpp \
     enemy/enemyhelper.cpp \
     game.cpp \
     wavemanager.cpp \
-    gameui.cpp
+    gameui.cpp \
+    tower/bullet/basebullet.cpp \
+    tower/bullet/guidancebullet.cpp
 
 HEADERS  += mainwindow.h \
     view.h \
     enemy/baseenemy.h \
     map/line.h \
     tower/basetower.h \
-    tower/bullet.h \
     enemy/enemyhelper.h \
     game.h \
     wavemanager.h \
-    gameui.h
+    gameui.h \
+    tower/bullet/basebullet.h \
+    tower/bullet/guidancebullet.h
 
 FORMS    += mainwindow.ui

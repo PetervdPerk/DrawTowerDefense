@@ -1,7 +1,7 @@
 #include "tower/basetower.h"
 #include <QDebug>
 #include <QtCore/qmath.h>
-#include "bullet.h"
+#include "bullet/guidancebullet.h"
 
 baseTower::baseTower(qreal x, qreal y, QList<baseEnemy*> *enemies, QGraphicsItem * parent) :QGraphicsEllipseItem(x,y,32,32, parent)
 {
@@ -66,7 +66,7 @@ void baseTower::advance(int phase){
         //qDebug() << "Enemy: " << x << " " << y << " " << distance << range;
 
         if(distance < range){
-            Bullet *bull = new Bullet(en,this);
+            baseBullet *bull = new guidanceBullet(en,this);
         }
     }
 }

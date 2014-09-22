@@ -1,4 +1,4 @@
-ifndef BASETOWER_H
+#ifndef BASETOWER_H
 #define BASETOWER_H
 
 #include <QGraphicsEllipseItem>
