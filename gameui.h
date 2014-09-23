@@ -2,6 +2,8 @@
 #define GAMEUI_H
 
 #include <QObject>
+#include <QGraphicsTextItem>
+#include "gameUIenum.h"
 #include "game.h"
 
 class gameUI : public QObject
@@ -13,11 +15,15 @@ public:
 signals:
 
 public slots:
-    void update();
+    void update(UIupdate upd);
 
 private:
     View* gameView;
     game* game_obj;
+
+    QGraphicsTextItem waveText;
+    QGraphicsTextItem lifeText;
+    QGraphicsTextItem moneyText;
 
 };
 

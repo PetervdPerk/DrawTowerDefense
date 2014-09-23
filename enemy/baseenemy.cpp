@@ -14,9 +14,24 @@ baseEnemy::baseEnemy(qreal health, enemyHelper* helper, QGraphicsItem * parent) 
     animation = new QPropertyAnimation(this,"pos",this);
     animation->setDuration(helper->getDurationOfPath());
     animation->setEasingCurve(QEasingCurve::Linear);
-    animation->setLoopCount(-1); //loop forever
     animation->setKeyValues(*helper->getPositions());
+    animation->setEndValue(helper->getEndPosition());
     animation->start();
+
+    QObject::connect(animation, SIGNAL(stateChanged(QAbstractAnimation::State,QAbstractAnimation::State)),
+                     this, SLOT(animationStateChanged(QAbstractAnimation::State,QAbstractAnimation::State)));
+}
+
+void baseEnemy::animationStateChanged(QAbstractAnimation::State newState,QAbstractAnimation::State oldstate){
+    if(newState == QAbstractAnimation::Stopped){
+        this->setEnabled(false);
+        this->setVisible(false);
+        emit removed(this);
+    }
+}
+
+bool baseEnemy::getKilled(){
+    return killed;
 }
 
 void baseEnemy::setCenterRect(QPointF position){
@@ -26,12 +41,17 @@ void baseEnemy::setCenterRect(QPointF position){
     setRect(rect);
 }
 
+int baseEnemy::getAnimationTime(){
+    return animation->currentTime();
+}
+
 void baseEnemy::hit(qreal damage){
     health -= damage;
     if(health <= 0){
         this->setEnabled(false);
         this->setVisible(false);
-
+        animation->pause();
+        killed = true;
         emit removed(this);
     }
 }

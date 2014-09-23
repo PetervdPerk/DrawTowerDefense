@@ -11,11 +11,18 @@ enemyHelper::enemyHelper(QPainterPath *gamePath, QObject *parent) :
         positions.push_back(QVariantAnimation::KeyValue(i/gamePath->length(),
                                  gamePath->pointAtPercent(gamePath->percentAtLength(i))));
     }
+
+    endPosition = gamePath->pointAtPercent(1.00);
 }
 
 QVariantAnimation::KeyValues* enemyHelper::getPositions(){
     return &positions;
 }
+
+QPointF enemyHelper::getEndPosition(){
+    return endPosition;
+}
+
 
 qreal enemyHelper::getDurationOfPath(){
     return gamePath->length() * SPEEDFACTOR;

@@ -18,7 +18,7 @@ guidanceBullet::guidanceBullet(baseEnemy* target, baseTower* tower)
 
 void guidanceBullet::advance(int phase){
     if(target != NULL){
-        //animation->setEndValue(target->rect().center());
+        //TODO this is very inefficient
         QList<QGraphicsItem *> list = collidingItems();
 
         if(list.size() > 1){

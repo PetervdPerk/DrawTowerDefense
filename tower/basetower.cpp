@@ -50,7 +50,6 @@ void baseTower::advance(int phase){
             }
         }
     }*/
-
     //Collision method 2
     /*
     for(int i = 0; i < enemies->size(); i++) {
@@ -85,10 +84,14 @@ void baseTower::shoot(){
     qreal x;
     qreal y;
     qreal distance;
-    qreal shortestDistance = range;
+    int animationTime = 0;
+    int biggestAnimationTime = 0;
+    //qreal shortestDistance = range;
     baseEnemy* enemy;
-    baseEnemy* closestEnemy = NULL;
+    baseEnemy* targetEnemy = NULL;
 
+    //Range based
+    /*
     for(int i = 0; i < enemies->size(); i++) {
         enemy = enemies->at(i);
         x = enemy->rect().center().x() - pos().x();
@@ -97,12 +100,28 @@ void baseTower::shoot(){
         distance = qSqrt(x * x + y * y);
 
         if(distance < shortestDistance){
-            closestEnemy = enemy;
+            targetEnemy = enemy;
             shortestDistance = distance;
+        }
+    }*/
+
+    //Loc based
+    for(int i = 0; i < enemies->size(); i++) {
+        enemy = enemies->at(i);
+        x = enemy->rect().center().x() - pos().x();
+        y = enemy->rect().center().y() - pos().y();
+
+        distance = qSqrt(x * x + y * y);
+
+        animationTime = enemy->getAnimationTime();
+
+        if(distance < range && animationTime > biggestAnimationTime ){
+            targetEnemy = enemy;
+            biggestAnimationTime = animationTime;
         }
     }
 
-    if(closestEnemy != NULL){
-        baseBullet *bull = new basicBullet(closestEnemy,this);
+    if(targetEnemy != NULL){
+        baseBullet *bull = new basicBullet(targetEnemy,this);
     }
 }

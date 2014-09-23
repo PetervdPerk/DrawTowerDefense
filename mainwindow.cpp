@@ -1,7 +1,5 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
-#include "game.h"
-
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -11,7 +9,10 @@ MainWindow::MainWindow(QWidget *parent) :
 
     this->gameView = new View(this,ui->graphicsView,100,100);
 
-    game *gm = new game(gameView);
+    gm = new game(gameView);
+    gui = new gameUI(gameView,gm);
+
+    QObject::connect(gm, SIGNAL(updateUI(UIupdate)), gui, SLOT(update(UIupdate)));
 }
 
 MainWindow::~MainWindow()

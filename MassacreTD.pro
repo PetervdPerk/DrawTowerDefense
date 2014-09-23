@@ -39,6 +39,7 @@ HEADERS  += mainwindow.h \
     gameui.h \
     tower/bullet/basebullet.h \
     tower/bullet/guidancebullet.h \
-    tower/bullet/basicbullet.h
+    tower/bullet/basicbullet.h \
+    gameUIenum.h
 
 FORMS    += mainwindow.ui
