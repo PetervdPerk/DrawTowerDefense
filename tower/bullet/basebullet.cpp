@@ -1,7 +1,7 @@
 #include "basebullet.h"
 
 baseBullet::baseBullet(baseEnemy* target, baseTower* tower = 0)
-    : m_Speed(1.0)
+    : m_Speed(10.0)
     , QGraphicsEllipseItem(tower)
 {
     this->target = target;
@@ -16,11 +16,6 @@ void baseBullet::setCenterRect(QPointF position){
     QRectF rect = this->rect();
 
     rect.moveCenter(position);
-
-    //qDebug()  <<  "Tick" << position.x() << " y:" << position.y();
     setRect(rect);
 }
 
-void baseBullet::advance(int phase){
-
-}

@@ -14,7 +14,7 @@ baseEnemy::baseEnemy(qreal health, enemyHelper* helper, QGraphicsItem * parent) 
     animation = new QPropertyAnimation(this,"pos",this);
     animation->setDuration(helper->getDurationOfPath());
     animation->setEasingCurve(QEasingCurve::Linear);
-    //animation->setLoopCount(-1); //loop forever
+    animation->setLoopCount(-1); //loop forever
     animation->setKeyValues(*helper->getPositions());
     animation->start();
 }
@@ -30,6 +30,8 @@ void baseEnemy::hit(qreal damage){
     health -= damage;
     if(health <= 0){
         this->setEnabled(false);
-        //deleteLater();
+        this->setVisible(false);
+
+        emit removed(this);
     }
 }

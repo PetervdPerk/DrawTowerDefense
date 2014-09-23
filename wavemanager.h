@@ -16,12 +16,11 @@ public:
 
 signals:
     void newWave();
-    void lifeDown();
-    void enemyDown();
+    void enemyDown(baseEnemy *enemy);
 
 public slots:
     void wave();
-    void enemyRemoved(bool destroyed);
+    void enemyRemoved(baseEnemy *enemy);
 
 private:
     QTimer timer;

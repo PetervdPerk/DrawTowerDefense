@@ -1,3 +1,7 @@
+#ifndef BASEBULLET_H
+#define BASEBULLET_H
+
+
 #include <QGraphicsEllipseItem>
 #include <QGraphicsSceneMouseEvent>
 #include <QTimer>
@@ -6,6 +10,7 @@
 
 #include <QDebug>
 #include <math.h>
+#include <QTimer>
 #include "enemy/baseenemy.h"
 #include "tower/basetower.h"
 
@@ -18,10 +23,16 @@ public:
     baseBullet(baseEnemy* target, baseTower* tower);
     virtual ~baseBullet() {}
     void setCenterRect(QPointF position);
-    void advance(int phase);
+    virtual void advance(int phase) = 0;
+
+public slots:
+    virtual void update(){};
 
 protected:
     baseEnemy* target;
     QBrush m_Brush;
     qreal m_Speed;
+    QTimer timer;
 };
+
+#endif // BASEBULLET_H

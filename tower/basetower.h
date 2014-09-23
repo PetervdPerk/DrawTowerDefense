@@ -9,6 +9,7 @@
 #include <QPainter>
 #include <QBrush>
 #include <QPen>
+#include <QTimer>
 
 class baseTower : public QObject, public QGraphicsEllipseItem
 {
@@ -19,8 +20,13 @@ public:
     void setCenterRect(QPointF position);
     void setRange(qreal range);
     void advance(int phase);
+
 protected:
     void mousePressEvent(QGraphicsSceneMouseEvent * event);
+    QTimer shootTimer;
+
+public slots:
+    virtual void shoot();
 
 private:
     QGraphicsEllipseItem *rangeEllipse;

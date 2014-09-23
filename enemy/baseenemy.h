@@ -22,7 +22,7 @@ public:
 protected:
 
 signals:
-    void removed(bool destroyed);
+    void removed(baseEnemy* enemy);
 
 private:
     qreal angle, speed;

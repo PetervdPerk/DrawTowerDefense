@@ -1,6 +1,8 @@
 #include "tower/basetower.h"
 #include <QDebug>
 #include <QtCore/qmath.h>
+
+#include "bullet/basicbullet.h"
 #include "bullet/guidancebullet.h"
 
 baseTower::baseTower(qreal x, qreal y, QList<baseEnemy*> *enemies, QGraphicsItem * parent) :QGraphicsEllipseItem(x,y,32,32, parent)
@@ -13,6 +15,9 @@ baseTower::baseTower(qreal x, qreal y, QList<baseEnemy*> *enemies, QGraphicsItem
     rangeEllipse = new QGraphicsEllipseItem(this);
 
     setRange(128);
+
+    QObject::connect(&shootTimer, SIGNAL(timeout()), this, SLOT(shoot()));
+    shootTimer.start(1000);
 }
 
 void baseTower::setCenterRect(QPointF position){
@@ -54,7 +59,7 @@ void baseTower::advance(int phase){
             Bullet *bull = new Bullet(en,this);
         }
     }*/
-
+    /*
     //Collision method 3
     for(int i = 0; i < enemies->size(); i++) {
         baseEnemy* en = enemies->at(i);
@@ -66,11 +71,38 @@ void baseTower::advance(int phase){
         //qDebug() << "Enemy: " << x << " " << y << " " << distance << range;
 
         if(distance < range){
-            baseBullet *bull = new guidanceBullet(en,this);
+            baseBullet *bull = new basicBullet(en,this);
         }
-    }
+    }*/
 }
 void baseTower::mousePressEvent(QGraphicsSceneMouseEvent *event){
     qDebug() << "Mouse click";
     advance(0);
+}
+
+void baseTower::shoot(){
+    //Collision method 3
+    qreal x;
+    qreal y;
+    qreal distance;
+    qreal shortestDistance = range;
+    baseEnemy* enemy;
+    baseEnemy* closestEnemy = NULL;
+
+    for(int i = 0; i < enemies->size(); i++) {
+        enemy = enemies->at(i);
+        x = enemy->rect().center().x() - pos().x();
+        y = enemy->rect().center().y() - pos().y();
+
+        distance = qSqrt(x * x + y * y);
+
+        if(distance < shortestDistance){
+            closestEnemy = enemy;
+            shortestDistance = distance;
+        }
+    }
+
+    if(closestEnemy != NULL){
+        baseBullet *bull = new basicBullet(closestEnemy,this);
+    }
 }

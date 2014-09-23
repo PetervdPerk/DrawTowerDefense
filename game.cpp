@@ -19,6 +19,7 @@ game::game(View* gameView, QObject *parent) :
 
     enemyHelp = new enemyHelper(&path);
     wavesMgr = new waveManager(&enemies,gameView,enemyHelp,this);
+    QObject::connect(wavesMgr, SIGNAL(enemyDown(baseEnemy*)), this, SLOT(enemyDown(baseEnemy*)));
 
 
 
@@ -31,5 +32,10 @@ void game::addTower(qreal x, qreal y) {
     tower->setFlag(QGraphicsItem::ItemIsMovable, true);
     towers.append(tower);
     gameView->addItem(tower);
+}
+
+void game::enemyDown(baseEnemy *enemy){
+    enemies.removeOne(enemy);
+    enemy->deleteLater();
 }
 

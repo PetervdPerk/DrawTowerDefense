@@ -16,6 +16,7 @@ waveManager::waveManager(QList<baseEnemy*> *enemies, View *gameView, enemyHelper
 void waveManager::wave(){
 
     baseEnemy *en = new baseEnemy(1, helper);
+    QObject::connect(en, SIGNAL(removed(baseEnemy*)), this, SLOT(enemyRemoved(baseEnemy*)));
 
     enemies->append(en);
     gameView->addItem(en);
@@ -24,10 +25,6 @@ void waveManager::wave(){
 }
 
 
-void waveManager::enemyRemoved(bool destroyed){
-    if(destroyed){
-        emit enemyDown();
-    } else {
-        emit lifeDown();
-    }
+void waveManager::enemyRemoved(baseEnemy *enemy){
+    emit enemyDown(enemy);
 }

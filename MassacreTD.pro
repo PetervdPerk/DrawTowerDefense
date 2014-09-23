@@ -25,7 +25,8 @@ SOURCES += main.cpp\
     wavemanager.cpp \
     gameui.cpp \
     tower/bullet/basebullet.cpp \
-    tower/bullet/guidancebullet.cpp
+    tower/bullet/guidancebullet.cpp \
+    tower/bullet/basicbullet.cpp
 
 HEADERS  += mainwindow.h \
     view.h \
@@ -37,6 +38,7 @@ HEADERS  += mainwindow.h \
     wavemanager.h \
     gameui.h \
     tower/bullet/basebullet.h \
-    tower/bullet/guidancebullet.h
+    tower/bullet/guidancebullet.h \
+    tower/bullet/basicbullet.h
 
 FORMS    += mainwindow.ui

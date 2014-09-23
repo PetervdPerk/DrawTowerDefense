@@ -23,6 +23,7 @@ public:
 signals:
 
 public slots:
+    void enemyDown(baseEnemy *enemy);
 
 private:
     void addTower(qreal x = 0, qreal y = 0);
