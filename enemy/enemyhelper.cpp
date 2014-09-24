@@ -13,7 +13,7 @@ enemyHelper::enemyHelper(QPainterPath *gamePath, QObject *parent) :
     }
 
     for( double i = 0 ; i < 10; i++) {
-        durations.append(gamePath->length() * SPEEDFACTOR * (1.00 - (i * 0.02)));
+        durations.append(gamePath->length() * SPEEDFACTOR * (1.00 - (i * 0.05)));
     }
 
     endPosition = gamePath->pointAtPercent(1.00);

@@ -21,6 +21,8 @@ game::game(View* gameView, QObject *parent) :
     QObject::connect(wavesMgr, SIGNAL(enemyDown(baseEnemy*)), this, SLOT(enemyDown(baseEnemy*)));
 
     addTower();
+
+    addTower();
 }
 
 

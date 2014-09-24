@@ -104,8 +104,7 @@ bool waveManager::processWave(){
         if(enemyNr < 102){
             setUpEnemy(new baseEnemy(2, helper));
             enemyNr++;
-        }
-        if(enemyNr > 102){
+        } else {
             enemyNr = 0;
             new_wave = true;
             timer.setInterval(TIME_BETWEEN_WAVES);
@@ -115,51 +114,46 @@ bool waveManager::processWave(){
         timer.setInterval(300);
         if(enemyNr < 15){
             setUpEnemy(new baseEnemy(2, helper));
-            enemyNr++;
         } else if(enemyNr < 25) {
             setUpEnemy(new baseEnemy(3, helper));
-            enemyNr++;
         }
         else if(enemyNr < 30) {
-        setUpEnemy(new baseEnemy(4, helper));
-        enemyNr++;
+            setUpEnemy(new baseEnemy(4, helper));
         }
+        enemyNr++;
         if(enemyNr > 30){
             enemyNr = 0;
             new_wave = true;
             timer.setInterval(TIME_BETWEEN_WAVES);
         }
-    break;
+        break;
     case 7:
         timer.setInterval(300);
         if(enemyNr < 49){
             setUpEnemy(new baseEnemy(2, helper));
-            enemyNr++;
         } else if(enemyNr < 64) {
             setUpEnemy(new baseEnemy(3, helper));
-            enemyNr++;
         }
-         else if(enemyNr < 74) {
-        setUpEnemy(new baseEnemy(4, helper));
+        else if(enemyNr < 74) {
+            setUpEnemy(new baseEnemy(4, helper));
+        }
+        else if(enemyNr < 83) {
+            setUpEnemy(new baseEnemy(5, helper));
+        }
         enemyNr++;
-        }
-         else if(enemyNr < 83) {
-        setUpEnemy(new baseEnemy(5, helper));
-        enemyNr++;
-        }
         if(enemyNr > 83){
             enemyNr = 0;
             new_wave = true;
             timer.setInterval(TIME_BETWEEN_WAVES);
         }
-    break;
+        break;
 
     default:
         break;
 
-}
+    }
 
-return new_wave;
+    return new_wave;
 
 }
 
