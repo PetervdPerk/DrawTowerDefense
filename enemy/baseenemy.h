@@ -5,6 +5,7 @@
 #include <QGraphicsObject>
 #include <QGraphicsScene>
 #include <QPropertyAnimation>
+#include "enemyanimation.h"
 #include <QPainter>
 #include <QBrush>
 #include <QPen>
@@ -27,7 +28,7 @@ protected:
     void updateEnemy();
     qreal angle, speed;
     enemyHelper* helper;
-    QPropertyAnimation* animation;
+    enemyAnimation* animation;
     bool killed = false;
 
 public slots:
