@@ -11,7 +11,7 @@ baseEnemy::baseEnemy(qreal health, enemyHelper* helper, QGraphicsItem * parent) 
     this->setVisible(true);
 
     //Animation to follow line
-    animation = new QPropertyAnimation(this,"pos",this);
+    animation = new enemyAnimation(this,"pos",this);
      updateEnemy();
     animation->setEasingCurve(QEasingCurve::Linear);
     animation->setKeyValues(*helper->getPositions());

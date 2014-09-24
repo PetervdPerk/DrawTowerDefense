@@ -40,6 +40,7 @@ void basicBullet::update(){
                 {
                     item->hit(1);
                     deleteLater(); //Delete bullet
+                    break;
                 }
             }
         }
