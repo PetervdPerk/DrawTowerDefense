@@ -41,6 +41,7 @@ bool waveManager::processWave(){
         setUpEnemy(new baseEnemy(1, helper));
         enemyNr++;
         if(enemyNr > 30){
+            enemyNr = 0;
             new_wave = true;
             timer.setInterval(TIME_BETWEEN_WAVES);
         }
@@ -48,20 +49,117 @@ bool waveManager::processWave(){
 
     case 2:
         timer.setInterval(300);
-        setUpEnemy(new baseEnemy(1, helper));
-        enemyNr++;
-        if(enemyNr > 40){
+        if(enemyNr < 30){
+            setUpEnemy(new baseEnemy(1, helper));
+            enemyNr++;
+        } else {
+            setUpEnemy(new baseEnemy(2, helper));
+            enemyNr++;
+        }
+        if(enemyNr > 45){
+            enemyNr = 0;
             new_wave = true;
             timer.setInterval(TIME_BETWEEN_WAVES);
         }
         break;
 
+    case 3:
+        timer.setInterval(300);
+        if(enemyNr < 15){
+            setUpEnemy(new baseEnemy(1, helper));
+            enemyNr++;
+        } else if(enemyNr < 30  ){
+            setUpEnemy(new baseEnemy(2, helper));
+            enemyNr++;
+        }
+        else if(enemyNr < 34  )
+            setUpEnemy(new baseEnemy(3, helper));
+        enemyNr++;
+        if(enemyNr > 34){
+            enemyNr = 0;
+            new_wave = true;
+            timer.setInterval(TIME_BETWEEN_WAVES);
+        }
+        break;
+    case 4:
+        timer.setInterval(300);
+        if(enemyNr < 10){
+            setUpEnemy(new baseEnemy(1, helper));
+            enemyNr++;
+        } else if(enemyNr < 30) {
+            setUpEnemy(new baseEnemy(2, helper));
+            enemyNr++;
+        }
+        else if(enemyNr < 44  )
+            setUpEnemy(new baseEnemy(3, helper));
+        enemyNr++;
+        if(enemyNr > 44){
+            enemyNr = 0;
+            new_wave = true;
+            timer.setInterval(TIME_BETWEEN_WAVES);
+        }
+        break;
+    case 5:
+        timer.setInterval(300);
+        if(enemyNr < 102){
+            setUpEnemy(new baseEnemy(2, helper));
+            enemyNr++;
+        }
+        if(enemyNr > 102){
+            enemyNr = 0;
+            new_wave = true;
+            timer.setInterval(TIME_BETWEEN_WAVES);
+        }
+        break;
+    case 6:
+        timer.setInterval(300);
+        if(enemyNr < 15){
+            setUpEnemy(new baseEnemy(2, helper));
+            enemyNr++;
+        } else if(enemyNr < 25) {
+            setUpEnemy(new baseEnemy(3, helper));
+            enemyNr++;
+        }
+        else if(enemyNr < 30) {
+        setUpEnemy(new baseEnemy(4, helper));
+        enemyNr++;
+        }
+        if(enemyNr > 30){
+            enemyNr = 0;
+            new_wave = true;
+            timer.setInterval(TIME_BETWEEN_WAVES);
+        }
+    break;
+    case 7:
+        timer.setInterval(300);
+        if(enemyNr < 49){
+            setUpEnemy(new baseEnemy(2, helper));
+            enemyNr++;
+        } else if(enemyNr < 64) {
+            setUpEnemy(new baseEnemy(3, helper));
+            enemyNr++;
+        }
+         else if(enemyNr < 74) {
+        setUpEnemy(new baseEnemy(4, helper));
+        enemyNr++;
+        }
+         else if(enemyNr < 83) {
+        setUpEnemy(new baseEnemy(5, helper));
+        enemyNr++;
+        }
+        if(enemyNr > 83){
+            enemyNr = 0;
+            new_wave = true;
+            timer.setInterval(TIME_BETWEEN_WAVES);
+        }
+    break;
+
     default:
         break;
 
-    }
+}
 
-    return new_wave;
+return new_wave;
 
 }
 

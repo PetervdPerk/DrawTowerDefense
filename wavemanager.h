@@ -6,6 +6,7 @@
 #include <QList>
 #include "view.h"
 #include "enemy/baseenemy.h"
+#include "enemy/blueenemy.h"
 #include "enemy/enemyhelper.h"
 
 class waveManager : public QObject

@@ -26,7 +26,8 @@ SOURCES += main.cpp\
     gameui.cpp \
     tower/bullet/basebullet.cpp \
     tower/bullet/guidancebullet.cpp \
-    tower/bullet/basicbullet.cpp
+    tower/bullet/basicbullet.cpp \
+    enemy/blueenemy.cpp
 
 HEADERS  += mainwindow.h \
     view.h \
@@ -40,6 +41,7 @@ HEADERS  += mainwindow.h \
     tower/bullet/basebullet.h \
     tower/bullet/guidancebullet.h \
     tower/bullet/basicbullet.h \
-    gameUIenum.h
+    gameUIenum.h \
+    enemy/blueenemy.h
 
 FORMS    += mainwindow.ui

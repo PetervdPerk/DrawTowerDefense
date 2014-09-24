@@ -43,7 +43,7 @@ private:
 
     qreal life = 100;
     qreal money = 2000;
-    qreal wave_stat = 0;
+    qreal wave_stat = 1;
 
 };
 

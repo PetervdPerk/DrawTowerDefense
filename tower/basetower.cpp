@@ -17,7 +17,7 @@ baseTower::baseTower(qreal x, qreal y, QList<baseEnemy*> *enemies, QGraphicsItem
     setRange(128);
 
     QObject::connect(&shootTimer, SIGNAL(timeout()), this, SLOT(shoot()));
-    shootTimer.start(1000);
+    shootTimer.start(500);
 }
 
 void baseTower::setCenterRect(QPointF position){

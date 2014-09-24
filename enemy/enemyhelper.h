@@ -4,6 +4,7 @@
 #include <QObject>
 #include <QPropertyAnimation>
 #include <QPainterPath>
+#include <QVector>
 
 class enemyHelper : public QObject
 {
@@ -11,7 +12,7 @@ class enemyHelper : public QObject
 public:
     enemyHelper(QPainterPath *gamePath, QObject *parent = 0);
     QVariantAnimation::KeyValues* getPositions();
-    qreal getDurationOfPath();
+    qreal getDurationOfPath(int health);
     QPointF getEndPosition();
 
 signals:
@@ -22,6 +23,7 @@ private:
     QPainterPath *gamePath;
     QVariantAnimation::KeyValues positions;
     QPointF endPosition;
+    QVector<qreal> durations;
 };
 
 #endif // ENEMYHELPER_H

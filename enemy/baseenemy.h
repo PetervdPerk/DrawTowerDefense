@@ -18,11 +18,17 @@ class baseEnemy : public QObject, public QGraphicsEllipseItem
 public:
     baseEnemy(qreal health, enemyHelper* helper, QGraphicsItem * parent = 0);
     void setCenterRect(QPointF position);
-    void hit(qreal damage);
+    virtual void hit(qreal damage);
     int getAnimationTime();
     bool getKilled();
 
 protected:
+    qreal health;
+    void updateEnemy();
+    qreal angle, speed;
+    enemyHelper* helper;
+    QPropertyAnimation* animation;
+    bool killed = false;
 
 public slots:
     void animationStateChanged(QAbstractAnimation::State newState,QAbstractAnimation::State oldstate);
@@ -30,12 +36,6 @@ public slots:
 signals:
     void removed(baseEnemy* enemy);
 
-private:
-    qreal angle, speed;
-    enemyHelper* helper;
-    QPropertyAnimation* animation;
-    qreal health;
-    bool killed = false;
 };
 
 #endif // BASEENEMY_H

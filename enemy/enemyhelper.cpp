@@ -12,6 +12,10 @@ enemyHelper::enemyHelper(QPainterPath *gamePath, QObject *parent) :
                                  gamePath->pointAtPercent(gamePath->percentAtLength(i))));
     }
 
+    for( double i = 0 ; i < 10; i++) {
+        durations.append(gamePath->length() * SPEEDFACTOR * (1.00 - (i * 0.02)));
+    }
+
     endPosition = gamePath->pointAtPercent(1.00);
 }
 
@@ -24,6 +28,6 @@ QPointF enemyHelper::getEndPosition(){
 }
 
 
-qreal enemyHelper::getDurationOfPath(){
-    return gamePath->length() * SPEEDFACTOR;
+qreal enemyHelper::getDurationOfPath(int health){
+    return durations.at(health);
 }
