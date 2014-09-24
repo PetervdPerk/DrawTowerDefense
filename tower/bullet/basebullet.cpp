@@ -1,7 +1,7 @@
 #include "basebullet.h"
 
 baseBullet::baseBullet(baseEnemy* target, baseTower* tower = 0)
-    : m_Speed(10.0)
+    : QObject(tower), m_Speed(10.0)
     , QGraphicsEllipseItem(tower)
 {
     this->target = target;

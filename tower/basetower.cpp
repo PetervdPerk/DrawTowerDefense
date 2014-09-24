@@ -108,12 +108,15 @@ void baseTower::shoot(){
     //Loc based
     for(int i = 0; i < enemies->size(); i++) {
         enemy = enemies->at(i);
-        x = enemy->rect().center().x() - pos().x();
-        y = enemy->rect().center().y() - pos().y();
+
+        x = enemy->rect().center().x() - (pos().x() + rect().width()/2);
+        y = enemy->rect().center().y() - (pos().y() + rect().height()/2);
 
         distance = qSqrt(x * x + y * y);
 
         animationTime = enemy->getAnimationTime();
+        if(distance < range)
+            //qDebug() << "Enemy" << enemy->rect().center().x() << enemy->rect().center().y() << animationTime;
 
         if(distance < range && animationTime > biggestAnimationTime ){
             targetEnemy = enemy;

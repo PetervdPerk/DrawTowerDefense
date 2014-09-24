@@ -17,7 +17,6 @@ game::game(View* gameView, QObject *parent) :
     enemyHelp = new enemyHelper(&path);
     wavesMgr = new waveManager(&enemies,gameView,enemyHelp,this);
 
-
     QObject::connect(wavesMgr, SIGNAL(newWave()), this, SLOT(wave()));
     QObject::connect(wavesMgr, SIGNAL(enemyDown(baseEnemy*)), this, SLOT(enemyDown(baseEnemy*)));
 

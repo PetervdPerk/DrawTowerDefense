@@ -26,17 +26,21 @@ void basicBullet::advance(int phase){
 void basicBullet::update(){
     setPos(x()+m_Speed*m_DirX, y()+m_Speed*m_DirY);
 
-    //TODO this is very inefficient
-    QList<QGraphicsItem *> list = collidingItems();
+    if(x() > 800 || x() < 0 || y() > 640 || y() < 0){
+        deleteLater();
+    }else {
+        //TODO this is very inefficient
+        QList<QGraphicsItem *> list = collidingItems();
 
-    if(list.size() > 1){
-        foreach(QGraphicsItem * i , list)
-        {
-            baseEnemy* item = dynamic_cast<baseEnemy*>(i);
-            if (item)
+        if(list.size() > 1){
+            foreach(QGraphicsItem * i , list)
             {
-                item->hit(1);
-                deleteLater();
+                baseEnemy* item = dynamic_cast<baseEnemy*>(i);
+                if (item)
+                {
+                    item->hit(1);
+                    deleteLater(); //Delete bullet
+                }
             }
         }
     }

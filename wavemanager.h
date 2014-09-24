@@ -21,8 +21,13 @@ signals:
 public slots:
     void wave();
     void enemyRemoved(baseEnemy *enemy);
+    bool processWave();
 
 private:
+    void setUpEnemy(baseEnemy *en);
+
+    int wave_nr = 1;
+    qreal enemyNr = 0;
     QTimer timer;
     QList<baseEnemy*> *enemies;
     View *gameView;
