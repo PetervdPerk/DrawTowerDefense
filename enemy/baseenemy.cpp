@@ -49,13 +49,13 @@ void baseEnemy::updateEnemy(){
 
     switch((int)health){
     case 1:
-        this->setBrush(QBrush(QColor(255,0,0)));
+        this->setBrush(QBrush(QColor("red")));
         break;
     case 2:
-        this->setBrush(QBrush(QColor(0,0,255)));
+        this->setBrush(QBrush(QColor("blue")));
         break;
     case 3:
-        this->setBrush(QBrush(QColor(0,255,0)));
+        this->setBrush(QBrush(QColor("green")));
         break;
     case 4:
         this->setBrush(QBrush(QColor("yellow")));
