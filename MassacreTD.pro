@@ -28,7 +28,10 @@ SOURCES += main.cpp\
     tower/bullet/guidancebullet.cpp \
     tower/bullet/basicbullet.cpp \
     enemy/blueenemy.cpp \
-    enemy/enemyanimation.cpp
+    enemy/enemyanimation.cpp \
+    vision/glyphdetector.cpp \
+    vision/capturethread.cpp \
+    vision/imagebuffer.cpp
 
 HEADERS  += mainwindow.h \
     view.h \
@@ -44,13 +47,17 @@ HEADERS  += mainwindow.h \
     tower/bullet/basicbullet.h \
     gameUIenum.h \
     enemy/blueenemy.h \
-    enemy/enemyanimation.h
+    enemy/enemyanimation.h \
+    vision/glyphdetector.h \
+    vision/capturethread.h \
+    vision/imagebuffer.h \
+    vision/Buffer.h
 
 FORMS    += mainwindow.ui
 
 
 unix {
-    LIBS += -L/usr/lib/x86_64-linux-gnu/ -lopencv_core  -lopencv_highgui -lopencv_imgproc
+    LIBS += -L/usr/lib/x86_64-linux-gnu/ -L/usr/local/include/ -lopencv_core  -lopencv_highgui -lopencv_imgproc -laruco
 }
 win32 {
 INCLUDEPATH += "C:\opencv\build\include"
