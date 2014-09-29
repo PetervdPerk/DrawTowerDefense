@@ -60,5 +60,18 @@ unix {
     LIBS += -L/usr/lib/x86_64-linux-gnu/ -L/usr/local/include/ -lopencv_core  -lopencv_highgui -lopencv_imgproc -laruco
 }
 win32 {
+INCLUDEPATH += "C:\opencv\build\include"
+LIBS += "C:\opencv\build\x86_mingw\CMakeFiles\bin\libopencv_calib3d249.dll" \
+ "C:\opencv\build\x86_mingw\CMakeFiles\bin\libopencv_contrib249.dll" \
+ "C:\opencv\build\x86_mingw\CMakeFiles\bin\libopencv_core249.dll" \
+ "C:\opencv\build\x86_mingw\CMakeFiles\bin\libopencv_features2d249.dll" \
+ "C:\opencv\build\x86_mingw\CMakeFiles\bin\libopencv_flann249.dll" \
+ "C:\opencv\build\x86_mingw\CMakeFiles\bin\libopencv_gpu249.dll" \
+ "C:\opencv\build\x86_mingw\CMakeFiles\bin\libopencv_highgui249.dll" \
+ "C:\opencv\build\x86_mingw\CMakeFiles\bin\libopencv_imgproc249.dll" \
+ "C:\opencv\build\x86_mingw\CMakeFiles\bin\libopencv_legacy249.dll" \
+ "C:\opencv\build\x86_mingw\CMakeFiles\bin\libopencv_ml249.dll" \
+ "C:\opencv\build\x86_mingw\CMakeFiles\bin\libopencv_objdetect249.dll" \
+ "C:\opencv\build\x86_mingw\CMakeFiles\bin\libopencv_video249.dll" \
 
 }
