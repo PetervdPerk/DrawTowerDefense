@@ -20,6 +20,9 @@ game::game(View* gameView, QObject *parent) :
     QObject::connect(wavesMgr, SIGNAL(newWave()), this, SLOT(wave()));
     QObject::connect(wavesMgr, SIGNAL(enemyDown(baseEnemy*)), this, SLOT(enemyDown(baseEnemy*)));
 
+    QObject::connect(&moneyTimer, SIGNAL(timeout()), this, SLOT(UpdateMoney()));
+    moneyTimer.start(6000);
+
     addTower();
 
     addTower();
@@ -48,6 +51,26 @@ void game::enemyDown(baseEnemy *enemy){
 void game::wave(){
     wave_stat++;
     emit updateUI(UIupdate::wave);
+}
+
+void game::UpdateMoney(){
+    money += 250; //add money after every wave
+    emit updateUI(UIupdate::money);
+}
+
+void game::CheckTowers(){
+  /*
+   * this function should check the amount of towers placed
+   * and if a tower is placed it should substract the price of that tower from the current money
+   * it should also check if it is possible to place a new tower (enough money).
+   *
+
+ gameView->customEvent();
+    if(towers->getPrice > getMoney())
+    {
+        //qdebug << "cant place tower";
+    }
+    */
 }
 
 qreal game::getLife(){

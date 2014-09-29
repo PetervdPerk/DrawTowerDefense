@@ -13,6 +13,7 @@
 #include <QGraphicsPathItem>
 #include <QDebug>
 #include <QList>
+#include <QTimer>
 
 
 class game : public QObject
@@ -30,6 +31,8 @@ signals:
 public slots:
     void enemyDown(baseEnemy *enemy);
     void wave();
+    void UpdateMoney();
+    void CheckTowers();
 
 private:
     void addTower(qreal x = 0, qreal y = 0);
@@ -40,6 +43,7 @@ private:
     enemyHelper* enemyHelp;
     waveManager* wavesMgr;
     QPainterPath path;
+    QTimer moneyTimer;
 
     qreal life = 100;
     qreal money = 2000;
