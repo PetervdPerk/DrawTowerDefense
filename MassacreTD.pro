@@ -61,6 +61,7 @@ unix {
 }
 win32 {
 INCLUDEPATH += "C:\opencv\build\include"
+INCLUDEPATH += "C:\aruco-1.2.5\build\include"
 LIBS += "C:\opencv\build\x86_mingw\CMakeFiles\bin\libopencv_calib3d249.dll" \
  "C:\opencv\build\x86_mingw\CMakeFiles\bin\libopencv_contrib249.dll" \
  "C:\opencv\build\x86_mingw\CMakeFiles\bin\libopencv_core249.dll" \
@@ -73,5 +74,7 @@ LIBS += "C:\opencv\build\x86_mingw\CMakeFiles\bin\libopencv_calib3d249.dll" \
  "C:\opencv\build\x86_mingw\CMakeFiles\bin\libopencv_ml249.dll" \
  "C:\opencv\build\x86_mingw\CMakeFiles\bin\libopencv_objdetect249.dll" \
  "C:\opencv\build\x86_mingw\CMakeFiles\bin\libopencv_video249.dll" \
+ "C:\opencv\build\x86_mingw\CMakeFiles\bin\libopencv_video249.dll" \
+ "C:\aruco-1.2.5\build\bin\libaruco125.dll" \
 
 }
