@@ -8,7 +8,7 @@ View::View(QObject *parent, QGraphicsView *view, qreal width, qreal height) :
     Viewheight = height;
     Viewwidth = width;
 
-    view->setViewport(new QGLWidget(QGLFormat(QGL::SampleBuffers))); //GPU rendering :)
+   // view->setViewport(new QGLWidget(QGLFormat(QGL::SampleBuffers))); //GPU rendering :)
 
     scene = new QGraphicsScene(this);
     scene->setSceneRect( 0, 0, 800, 640 );

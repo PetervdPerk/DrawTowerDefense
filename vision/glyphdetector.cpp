@@ -1,3 +1,4 @@
+#include <QApplication>
 #include "glyphdetector.h"
 
 
@@ -57,11 +58,16 @@ glyphDetector::glyphDetector(bool uiEnabled, QObject *parent) :
 
 void glyphDetector::run() {
     try{
+
+        qDebug() << "Thread started";
         int index=0;
         //capture until press ESC or until the end of the video
         do
         {
+
+            qDebug() << "retrieve image";
             TheVideoCapturer.retrieve( TheInputImage);
+            qDebug() << "image received";
             //copy image
 
             index++; //number of images captured
@@ -112,8 +118,10 @@ void glyphDetector::run() {
 
 void glyphDetector::updateGUI(){
     if(ui) {
+        moveToThread(QApplication::instance()->thread());
         cv::imshow("in",TheInputImageCopy);
         cv::imshow("thres",MDetector.getThresholdedImage());
+        moveToThread(this);
     }
 }
 

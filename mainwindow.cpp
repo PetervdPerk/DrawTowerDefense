@@ -18,13 +18,13 @@ MainWindow::MainWindow(QWidget *parent) :
 
     QObject::connect(gm, SIGNAL(updateUI(UIupdate)), gui, SLOT(update(UIupdate)));
 
-    //glyphDetector* detect = new glyphDetector(false);
+    glyphDetector* detect = new glyphDetector(true);
 
-    ImageBuffer* buffer = new ImageBuffer();
-    CaptureThread* cap = new CaptureThread(buffer,0,true,640,480);
+    //ImageBuffer* buffer = new ImageBuffer();
+    //CaptureThread* cap = new CaptureThread(buffer,0,true,640,480);
 
 
-    //detect->start();
+    detect->start();
 
 }
 
