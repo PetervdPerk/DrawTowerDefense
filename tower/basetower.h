@@ -21,18 +21,23 @@ public:
     void setRange(qreal range);
     void advance(int phase);
 
+
 protected:
     void mousePressEvent(QGraphicsSceneMouseEvent * event);
     QTimer shootTimer;
+    QGraphicsEllipseItem *rangeEllipse;
+    QList<baseEnemy*> *enemies;
+    qreal angle, speed;
+    qreal range;
 
 public slots:
     virtual void shoot();
 
 private:
-    QGraphicsEllipseItem *rangeEllipse;
-    QList<baseEnemy*> *enemies;
-    qreal angle, speed;
-    qreal range;
+   // QGraphicsEllipseItem *rangeEllipse;
+    //QList<baseEnemy*> *enemies;
+   // qreal angle, speed;
+   // qreal range;
 };
 
 #endif // BASETOWER_H

@@ -5,6 +5,7 @@
 #include "enemy/baseenemy.h"
 #include "enemy/enemyhelper.h"
 #include "tower/basetower.h"
+#include "tower/lasertower.h"
 #include "wavemanager.h"
 #include "view.h"
 #include "gameUIenum.h"
@@ -24,6 +25,7 @@ public:
     qreal getLife();
     qreal getMoney();
     qreal getWave();
+  //  qreal getWaveTimer();
 
 signals:
     void updateUI(UIupdate upd);
@@ -33,9 +35,11 @@ public slots:
     void wave();
     void UpdateMoney();
     void CheckTowers();
+//    void WaveTimer();
 
 private:
     void addTower(qreal x = 0, qreal y = 0);
+    void addLaserTower(qreal x = 0, qreal y = 0);
 
     View* gameView;
     QList<baseEnemy*> enemies;
@@ -48,6 +52,7 @@ private:
     qreal life = 100;
     qreal money = 2000;
     qreal wave_stat = 1;
+  //  qreal wave_timer = 0;
 
 };
 

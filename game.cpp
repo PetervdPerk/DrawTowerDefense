@@ -20,12 +20,13 @@ game::game(View* gameView, QObject *parent) :
     QObject::connect(wavesMgr, SIGNAL(newWave()), this, SLOT(wave()));
     QObject::connect(wavesMgr, SIGNAL(enemyDown(baseEnemy*)), this, SLOT(enemyDown(baseEnemy*)));
 
+    //QObject::connect(wavesMgr) (times between waves)
     QObject::connect(&moneyTimer, SIGNAL(timeout()), this, SLOT(UpdateMoney()));
     moneyTimer.start(6000);
 
     addTower();
 
-    addTower();
+    addLaserTower();
 }
 
 
@@ -34,6 +35,13 @@ void game::addTower(qreal x, qreal y) {
     tower->setFlag(QGraphicsItem::ItemIsMovable, true);
     towers.append(tower);
     gameView->addItem(tower);
+}
+
+void game::addLaserTower(qreal x, qreal y) {
+    laserTower* tower2 = new laserTower(x,y,&enemies);
+    tower2->setFlag(QGraphicsItem::ItemIsMovable, true);
+    towers.append(tower2);
+    gameView->addItem(tower2);
 }
 
 void game::enemyDown(baseEnemy *enemy){

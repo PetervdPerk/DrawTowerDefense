@@ -24,6 +24,7 @@ private:
     QGraphicsTextItem waveText;
     QGraphicsTextItem lifeText;
     QGraphicsTextItem moneyText;
+    QGraphicsTextItem waveTimerText;
 
 };
 

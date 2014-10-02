@@ -4,6 +4,7 @@
 
 #include "bullet/basicbullet.h"
 #include "bullet/guidancebullet.h"
+#include "bullet/laserbullet.h"
 
 baseTower::baseTower(qreal x, qreal y, QList<baseEnemy*> *enemies, QGraphicsItem * parent) :QGraphicsEllipseItem(x,y,32,32, parent)
 {

@@ -18,6 +18,7 @@ glyphDetector::glyphDetector(bool uiEnabled, QObject *parent) :
     try
     {
         int vIdx=0;
+        qDebug() << "vIdx is" << vIdx;
         //check if the :idx is here
         cout<<"Opening camera index "<<vIdx<<endl;
         TheVideoCapturer.open(vIdx);
@@ -28,6 +29,7 @@ glyphDetector::glyphDetector(bool uiEnabled, QObject *parent) :
 
         //read camera parameters if passed
         if (TheIntrinsicFile!="") {
+            qDebug() <<"camera parameters passed";
             TheCameraParameters.readFromXMLFile(TheIntrinsicFile.toStdString());
             TheCameraParameters.resize(TheInputImage.size());
         }
@@ -118,6 +120,7 @@ void glyphDetector::run() {
 
 void glyphDetector::updateGUI(){
     if(ui) {
+        qDebug() << "update gui";
         moveToThread(QApplication::instance()->thread());
         cv::imshow("in",TheInputImageCopy);
         cv::imshow("thres",MDetector.getThresholdedImage());

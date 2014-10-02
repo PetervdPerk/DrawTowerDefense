@@ -31,7 +31,9 @@ SOURCES += main.cpp\
     enemy/enemyanimation.cpp \
     vision/glyphdetector.cpp \
     vision/capturethread.cpp \
-    vision/imagebuffer.cpp
+    vision/imagebuffer.cpp \
+    tower/bullet/laserbullet.cpp \
+    tower/lasertower.cpp
 
 HEADERS  += mainwindow.h \
     view.h \
@@ -51,7 +53,9 @@ HEADERS  += mainwindow.h \
     vision/glyphdetector.h \
     vision/capturethread.h \
     vision/imagebuffer.h \
-    vision/Buffer.h
+    vision/Buffer.h \
+    tower/bullet/laserbullet.h \
+    tower/lasertower.h
 
 FORMS    += mainwindow.ui
 
