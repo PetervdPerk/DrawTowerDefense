@@ -16,6 +16,8 @@
 
 using namespace cv;
 
+namespace vision
+{
 class ImageBuffer
 {
 public:
@@ -39,5 +41,6 @@ private:
     bool doSync;
 
 };
+}
 
 #endif // IMAGEBUFFER_H

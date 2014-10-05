@@ -16,6 +16,7 @@
 using namespace cv;
 using namespace aruco;
 
+
 class glyphDetector : public QThread
 {
     Q_OBJECT

@@ -2,8 +2,8 @@
 #include "ui_mainwindow.h"
 #include "vision/glyphdetector.h"
 
-#include "vision/capturethread.h"
-#include "vision/imagebuffer.h"
+#include "vision/visionmanager.h"
+#include "vision/visionview.h"
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -18,13 +18,17 @@ MainWindow::MainWindow(QWidget *parent) :
 
     QObject::connect(gm, SIGNAL(updateUI(UIupdate)), gui, SLOT(update(UIupdate)));
 
-    glyphDetector* detect = new glyphDetector(true);
-
-    //ImageBuffer* buffer = new ImageBuffer();
-    //CaptureThread* cap = new CaptureThread(buffer,0,true,640,480);
+    //glyphDetector* detect = new glyphDetector(false);
 
 
-    detect->start();
+    vision::visionManager *mgr = new vision::visionManager();
+
+    mgr->enableView();
+
+
+
+
+    //detect->start();
 
 }
 

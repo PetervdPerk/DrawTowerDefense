@@ -40,26 +40,29 @@
 #include <QByteArray>
 #include <QDebug>
 
+namespace vision
+{
+
 template<class T> class Buffer
 {
-    public:
-        Buffer(int size);
-        void add(const T& data, bool dropIfFull=false);
-        T get();
-        int size();
-        int maxSize();
-        bool clear();
-        bool isFull();
-        bool isEmpty();
+public:
+    Buffer(int size);
+    void add(const T& data, bool dropIfFull=false);
+    T get();
+    int size();
+    int maxSize();
+    bool clear();
+    bool isFull();
+    bool isEmpty();
 
-    private:
-        QMutex queueProtect;
-        QQueue<T> queue;
-        QSemaphore *freeSlots;
-        QSemaphore *usedSlots;
-        QSemaphore *clearBuffer_add;
-        QSemaphore *clearBuffer_get;
-        int bufferSize;
+private:
+    QMutex queueProtect;
+    QQueue<T> queue;
+    QSemaphore *freeSlots;
+    QSemaphore *usedSlots;
+    QSemaphore *clearBuffer_add;
+    QSemaphore *clearBuffer_get;
+    int bufferSize;
 };
 
 template<class T> Buffer<T>::Buffer(int size)
@@ -180,6 +183,8 @@ template<class T> bool Buffer<T>::isFull()
 template<class T> bool Buffer<T>::isEmpty()
 {
     return queue.size()==0;
+}
+
 }
 
 #endif // BUFFER_H

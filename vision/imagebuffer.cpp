@@ -1,12 +1,12 @@
 #include "imagebuffer.h"
 
-ImageBuffer::ImageBuffer()
+vision::ImageBuffer::ImageBuffer()
 {
     nArrived=0;
     doSync=false;
 }
 
-void ImageBuffer::add(int deviceNumber, Buffer<Mat>* imageBuffer, bool sync)
+void vision::ImageBuffer::add(int deviceNumber, Buffer<Mat>* imageBuffer, bool sync)
 {
     // Device stream is to be synchronized
     if(sync)
@@ -19,12 +19,12 @@ void ImageBuffer::add(int deviceNumber, Buffer<Mat>* imageBuffer, bool sync)
     imageBufferMap[deviceNumber]=imageBuffer;
 }
 
-Buffer<Mat>* ImageBuffer::getByDeviceNumber(int deviceNumber)
+vision::Buffer<Mat>* vision::ImageBuffer::getByDeviceNumber(int deviceNumber)
 {
     return imageBufferMap[deviceNumber];
 }
 
-void ImageBuffer::removeByDeviceNumber(int deviceNumber)
+void vision::ImageBuffer::removeByDeviceNumber(int deviceNumber)
 {
     // Remove buffer for device from imageBufferMap
     imageBufferMap.remove(deviceNumber);
@@ -39,7 +39,7 @@ void ImageBuffer::removeByDeviceNumber(int deviceNumber)
     mutex.unlock();
 }
 
-void ImageBuffer::sync(int deviceNumber)
+void vision::ImageBuffer::sync(int deviceNumber)
 {
     // Only perform sync if enabled for specified device/stream
     mutex.lock();
@@ -59,28 +59,28 @@ void ImageBuffer::sync(int deviceNumber)
     mutex.unlock();
 }
 
-void ImageBuffer::wakeAll()
+void vision::ImageBuffer::wakeAll()
 {
     QMutexLocker locker(&mutex);
     wc.wakeAll();
 }
 
-void ImageBuffer::setSyncEnabled(bool enable)
+void vision::ImageBuffer::setSyncEnabled(bool enable)
 {
     doSync=enable;
 }
 
-bool ImageBuffer::isSyncEnabledForDeviceNumber(int deviceNumber)
+bool vision::ImageBuffer::isSyncEnabledForDeviceNumber(int deviceNumber)
 {
     return syncSet.contains(deviceNumber);
 }
 
-bool ImageBuffer::getSyncEnabled()
+bool vision::ImageBuffer::getSyncEnabled()
 {
     return doSync;
 }
 
-bool ImageBuffer::containsImageBufferForDeviceNumber(int deviceNumber)
+bool vision::ImageBuffer::containsImageBufferForDeviceNumber(int deviceNumber)
 {
     return imageBufferMap.contains(deviceNumber);
 }

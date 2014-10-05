@@ -32,8 +32,11 @@ SOURCES += main.cpp\
     vision/glyphdetector.cpp \
     vision/capturethread.cpp \
     vision/imagebuffer.cpp \
+    vision/processingthread.cpp \
+    vision/visionmanager.cpp \
     tower/bullet/laserbullet.cpp \
-    tower/lasertower.cpp
+    tower/lasertower.cpp \
+    vision/visionview.cpp
 
 HEADERS  += mainwindow.h \
     view.h \
@@ -54,10 +57,14 @@ HEADERS  += mainwindow.h \
     vision/capturethread.h \
     vision/imagebuffer.h \
     vision/Buffer.h \
+    vision/processingthread.h \
+    vision/visionmanager.h \
     tower/bullet/laserbullet.h \
-    tower/lasertower.h
+    tower/lasertower.h \
+    vision/visionview.h
 
-FORMS    += mainwindow.ui
+FORMS    += mainwindow.ui \
+    vision/visionview.ui
 
 
 unix {
