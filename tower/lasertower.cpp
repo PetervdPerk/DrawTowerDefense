@@ -16,12 +16,10 @@ laserTower::laserTower(qreal x, qreal y, QList<baseEnemy*> *enemies, QGraphicsIt
     this->setBrush(QBrush(QColor(0,0,255)));
     this->setVisible(true);
 
-    rangeEllipse = new QGraphicsEllipseItem(this);
-
-    setRange(192);
+   setRange(192);
 
     QObject::connect(&shootTimer, SIGNAL(timeout()), this, SLOT(shoot()));
-    shootTimer.start(1000);
+    shootTimer.setInterval(1000);
 }
 
 void laserTower::setCenterRect(QPointF position){

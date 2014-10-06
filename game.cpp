@@ -30,7 +30,7 @@ game::game(View* gameView, QObject *parent) :
 }
 
 void game::updateTower(QPointF loc, int id){
-    towers.at(id)->setCenterPos(loc);
+    towers.at(id-1)->setCenterPos(loc);
 }
 
 
