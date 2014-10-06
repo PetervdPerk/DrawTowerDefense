@@ -1,4 +1,5 @@
 #include "processingthread.h"
+#include <QDebug>
 
 vision::ProcessingThread::ProcessingThread(ImageBuffer *imgBuffer, int deviceNumber) : QThread()
 {
@@ -90,41 +91,53 @@ void vision::ProcessingThread::run()
         AvrgTime.second++;
         cout<<"\rTime detection="<<1000*AvrgTime.first/AvrgTime.second<<" milliseconds nmarkers="<<TheMarkers.size()<< std::flush;
 
-        //print marker info and draw the markers in image
-        currentFrame.copyTo(TheInputImageCopy);
+        if(showImage){
+            //print marker info and draw the markers in image
+            currentFrame.copyTo(TheInputImageCopy);
 
-        for (unsigned int i=0;i<TheMarkers.size();i++) {
-            cout<<endl<<TheMarkers[i];
-            TheMarkers[i].draw(TheInputImageCopy,Scalar(0,0,255),1);
-        }
-        if (TheMarkers.size()!=0)            cout<<endl;
-        //print other rectangles that contains no valid markers
-        /**     for (unsigned int i=0;i<MDetector.getCandidates().size();i++) {
+            for (unsigned int i=0;i<TheMarkers.size();i++) {
+                cout<<endl<<TheMarkers[i];
+                TheMarkers[i].draw(TheInputImageCopy,Scalar(0,0,255),1);
+            }
+            if (TheMarkers.size()!=0)            cout<<endl;
+            //print other rectangles that contains no valid markers
+            /**     for (unsigned int i=0;i<MDetector.getCandidates().size();i++) {
           aruco::Marker m( MDetector.getCandidates()[i],999);
           m.draw(TheInputImageCopy,cv::Scalar(255,0,0));
       }*/
 
-        //draw a 3d cube in each marker if there is 3d info
-       /* if (  TheCameraParameters.isValid())
+            //draw a 3d cube in each marker if there is 3d info
+            /* if (  TheCameraParameters.isValid())
             for (unsigned int i=0;i<TheMarkers.size();i++) {
                 CvDrawingUtils::draw3dCube(TheInputImageCopy,TheMarkers[i],TheCameraParameters);
                 CvDrawingUtils::draw3dAxis(TheInputImageCopy,TheMarkers[i],TheCameraParameters);
             }*/
-        //DONE! Easy, right?
-        //show input with augmented information and  the thresholded image
+            //DONE! Easy, right?
+            //show input with augmented information and  the thresholded image
 
 
 
-        ////////////////////////////////////
-        // PERFORM IMAGE PROCESSING ABOVE //
-        ////////////////////////////////////
+            ////////////////////////////////////
+            // PERFORM IMAGE PROCESSING ABOVE //
+            ////////////////////////////////////
 
-        // Convert Mat to QImage
-        frame=MatToQImage(TheInputImageCopy);
+            // Convert Mat to QImage
+            frame=MatToQImage(TheInputImageCopy);
+
+
+            // Inform GUI thread of new frame (QImage)
+            emit newFrame(frame);
+
+        }
+
+        for (unsigned int i=0;i<TheMarkers.size();i++) {
+            QPointF loc;
+            loc.setX(TheMarkers[i].getCenter().x);
+            loc.setY(TheMarkers[i].getCenter().y);
+            emit glyphLoc(loc,TheMarkers[i].id);
+        }
+
         processingMutex.unlock();
-
-        // Inform GUI thread of new frame (QImage)
-        emit newFrame(frame);
 
         // Update statistics
         updateFPS(processingTime);

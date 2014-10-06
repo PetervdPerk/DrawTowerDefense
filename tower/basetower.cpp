@@ -28,6 +28,14 @@ void baseTower::setCenterRect(QPointF position){
     setRect(rect);
 }
 
+void baseTower::setCenterPos(QPointF position){
+    //Set device to location
+    position.setX(position.x()+16);
+    position.setY(position.y()+16);
+
+    setPos(position);
+}
+
 void baseTower::setRange(qreal range){
     this->range = range;
     QRectF rangeRect;

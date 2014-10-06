@@ -35,6 +35,7 @@ public slots:
     void wave();
     void UpdateMoney();
     void CheckTowers();
+    void updateTower(QPointF loc, int id);
 //    void WaveTimer();
 
 private:

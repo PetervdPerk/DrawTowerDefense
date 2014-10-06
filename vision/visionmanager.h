@@ -19,6 +19,9 @@ public:
     virtual ~visionManager();
     void enableView();
 
+signals:
+    void updateTower(QPointF loc, int id);
+
 private:
     vision::ImageBuffer* buffer;
     vision::CaptureThread* capture;

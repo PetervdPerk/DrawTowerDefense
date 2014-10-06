@@ -56,6 +56,8 @@ private:
     int deviceNumber;
     bool enableFrameProcessing;
 
+
+    bool showImage = true;
     float TheMarkerSize=-1;
     int ThePyrDownLevel;
     MarkerDetector MDetector;
@@ -75,6 +77,7 @@ protected:
 
 signals:
     void newFrame(const QImage &frame);
+    void glyphLoc(QPointF loc, int id);
 };
 }
 

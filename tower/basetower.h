@@ -18,6 +18,7 @@ class baseTower : public QObject, public QGraphicsEllipseItem
 public:
     baseTower(qreal x, qreal y, QList<baseEnemy*> *enemies, QGraphicsItem * parent = 0);
     void setCenterRect(QPointF position);
+    void setCenterPos(QPointF position);
     void setRange(qreal range);
     void advance(int phase);
 

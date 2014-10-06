@@ -25,6 +25,8 @@ MainWindow::MainWindow(QWidget *parent) :
 
     mgr->enableView();
 
+    QObject::connect(mgr, SIGNAL(updateTower(QPointF,int)), gm , SLOT(updateTower(QPointF,int)));
+
 
 
 

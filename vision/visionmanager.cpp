@@ -11,6 +11,9 @@ vision::visionManager::visionManager(QObject *parent) : QObject(parent)
 
     proc = new vision::ProcessingThread(buffer,0);
     proc->start();
+
+    QObject::connect(proc, SIGNAL(glyphLoc(QPointF,int)), this, SIGNAL(updateTower(QPointF,int)) );
+
 }
 
 void vision::visionManager::enableView(){

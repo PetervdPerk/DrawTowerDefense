@@ -29,6 +29,10 @@ game::game(View* gameView, QObject *parent) :
     addLaserTower();
 }
 
+void game::updateTower(QPointF loc, int id){
+    towers.at(id)->setCenterPos(loc);
+}
+
 
 void game::addTower(qreal x, qreal y) {
     baseTower* tower = new baseTower(x,y,&enemies);
