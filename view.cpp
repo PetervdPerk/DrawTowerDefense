@@ -18,7 +18,7 @@ View::View(QObject *parent, QGraphicsView *view, qreal width, qreal height) :
     connect(timer, SIGNAL(timeout()),scene, SLOT(advance()));
     timer->start(200);
 
-   // view->setRenderHints( QPainter::Antialiasing );
+    view->setRenderHints( QPainter::Antialiasing );
 
     resizeHandler();
 }

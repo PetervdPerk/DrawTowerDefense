@@ -15,6 +15,24 @@ vision::CaptureThread::CaptureThread(ImageBuffer *imgBuffer, int deviceNumber,
     fpsSum=0;
     fps.clear();
 
+#ifdef UNIX
+    devName.append(QString::number(deviceNumber));
+    v4l2_fd = v4l2_open(devName.toStdString().c_str(), O_RDWR, 0);
+    if (v4l2_fd < 0) {
+        qDebug() << "v4l2_open " << devName  << "Open Failed";
+    }
+
+    qDebug() << "Get White balance temperature" << v4l2_get_control(v4l2_fd,V4L2_CID_WHITE_BALANCE_TEMPERATURE);
+    qDebug() << "Get Exposure absolute" << v4l2_get_control(v4l2_fd,V4L2_CID_EXPOSURE_ABSOLUTE);
+
+    qDebug() << "Set Auto white balance" << v4l2_set_control(v4l2_fd,V4L2_CID_AUTO_WHITE_BALANCE,0);
+    qDebug() << "Set White balance temperature" << v4l2_set_control(v4l2_fd,V4L2_CID_WHITE_BALANCE_TEMPERATURE,19661);
+    qDebug() << "Set Exposure Auto" << v4l2_set_control(v4l2_fd,V4L2_CID_EXPOSURE_AUTO,21845);
+    qDebug() << "Set Exposure absolute" << v4l2_set_control(v4l2_fd,V4L2_CID_EXPOSURE_ABSOLUTE,9169);
+
+    v4l2_close(v4l2_fd);
+#endif
+
     cap.open(deviceNumber);
 }
 

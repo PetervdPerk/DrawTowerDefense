@@ -81,11 +81,14 @@ void vision::ProcessingThread::run()
         ////////////////////////////////////
 
 
+        cv::flip(currentFrame,currentFrame, 0);
+        cv::flip(currentFrame,TheInputImage, 1);
+
 
         //index++; //number of images captured
         double tick = (double)getTickCount();//for checking the speed
         //Detection of markers in the image passed
-        MDetector.detect(currentFrame,TheMarkers,TheCameraParameters,TheMarkerSize);
+        MDetector.detect(TheInputImage,TheMarkers,TheCameraParameters,TheMarkerSize);
         //chekc the speed by calculating the mean speed of all iterations
         AvrgTime.first+=((double)getTickCount()-tick)/getTickFrequency();
         AvrgTime.second++;
@@ -93,7 +96,7 @@ void vision::ProcessingThread::run()
 
         if(showImage){
             //print marker info and draw the markers in image
-            currentFrame.copyTo(TheInputImageCopy);
+            TheInputImage.copyTo(TheInputImageCopy);
 
             for (unsigned int i=0;i<TheMarkers.size();i++) {
                 cout<<endl<<TheMarkers[i];

@@ -71,7 +71,6 @@ private:
     int iThresParam1,iThresParam2;
     int waitTime=0;
 
-
 protected:
     void run();
 

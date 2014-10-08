@@ -68,7 +68,7 @@ FORMS    += mainwindow.ui \
 
 
 unix {
-    LIBS += -L/usr/lib/x86_64-linux-gnu/ -L/usr/local/include/ -lopencv_core  -lopencv_highgui -lopencv_imgproc -laruco
+    LIBS += -L/usr/lib/x86_64-linux-gnu/ -L/usr/local/include/ -lopencv_core  -lopencv_highgui -lopencv_imgproc -laruco -lv4l2
 }
 win32 {
 INCLUDEPATH += "C:\opencv\build\include"
@@ -89,3 +89,6 @@ LIBS += "C:\opencv\build\x86_mingw\CMakeFiles\bin\libopencv_calib3d249.dll" \
  "C:\aruco-1.2.5\build\bin\libaruco125.dll" \
 
 }
+
+win32:DEFINES  += WIN32
+unix:DEFINES     += UNIX

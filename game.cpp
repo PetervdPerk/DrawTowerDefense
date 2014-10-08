@@ -30,7 +30,9 @@ game::game(View* gameView, QObject *parent) :
 }
 
 void game::updateTower(QPointF loc, int id){
-    towers.at(id-1)->setCenterPos(loc);
+    qDebug() << towers.size() << " " << id;
+    if(id <= towers.size() && id > 0)
+        towers.at(id-1)->setCenterPos(loc);
 }
 
 

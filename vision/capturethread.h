@@ -7,6 +7,12 @@
 #include <QQueue>
 #include <QDebug>
 
+#ifdef UNIX
+#include <libv4l2.h>
+#include <linux/v4l2-controls.h>
+#include <fcntl.h>
+#endif
+
 //OpenCV
 #include <opencv2/highgui/highgui.hpp>
 
@@ -51,6 +57,11 @@ private:
     int width;
     int height;
     int AverageFps;
+
+#ifdef UNIX
+    int v4l2_fd;
+    QString devName = "/dev/video";
+#endif
 
 
 
