@@ -24,29 +24,34 @@ game::game(View* gameView, QObject *parent) :
     QObject::connect(&moneyTimer, SIGNAL(timeout()), this, SLOT(UpdateMoney()));
     moneyTimer.start(6000);
 
-    addTower();
 
-    addLaserTower();
 }
 
 void game::updateTower(QPointF loc, int id){
-    qDebug() << towers.size() << " " << id;
-    if(id <= towers.size() && id > 0)
-        towers.at(id-1)->setCenterPos(loc);
+    if(towers.contains(id)){
+        towers[id]->setCenterPos(loc);
+    } else {
+        if(money >= 2000){
+            addTower(id);
+            towers[id]->setCenterPos(loc);
+            money = money - 2000;
+            emit updateUI(UIupdate::money);
+        }
+    }
 }
 
 
-void game::addTower(qreal x, qreal y) {
-    baseTower* tower = new baseTower(x,y,&enemies);
+void game::addTower(int id) {
+    baseTower* tower = new baseTower(0,0,&enemies);
     tower->setFlag(QGraphicsItem::ItemIsMovable, true);
-    towers.append(tower);
+    towers.insert(id,tower);
     gameView->addItem(tower);
 }
 
-void game::addLaserTower(qreal x, qreal y) {
-    laserTower* tower2 = new laserTower(x,y,&enemies);
+void game::addLaserTower(int id) {
+    laserTower* tower2 = new laserTower(0,0,&enemies);
     tower2->setFlag(QGraphicsItem::ItemIsMovable, true);
-    towers.append(tower2);
+    towers.insert(id,tower2);
     gameView->addItem(tower2);
 }
 
@@ -73,7 +78,7 @@ void game::UpdateMoney(){
 }
 
 void game::CheckTowers(){
-  /*
+    /*
    * this function should check the amount of towers placed
    * and if a tower is placed it should substract the price of that tower from the current money
    * it should also check if it is possible to place a new tower (enough money).

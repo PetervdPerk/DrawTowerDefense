@@ -6,11 +6,13 @@
 #include "bullet/guidancebullet.h"
 #include "bullet/laserbullet.h"
 
-baseTower::baseTower(qreal x, qreal y, QList<baseEnemy*> *enemies, QGraphicsItem * parent) :QGraphicsEllipseItem(x,y,32,32, parent)
+
+
+baseTower::baseTower(qreal x, qreal y, QList<baseEnemy*> *enemies, QGraphicsItem * parent) :QGraphicsRectItem(x,y,68,68, parent)
 {
     this->enemies = enemies;
     setPos(x,y);
-    this->setBrush(QBrush(QColor(255,0,0)));
+    this->setBrush(QBrush(QColor(255,255,255)));
     this->setVisible(true);
 
     rangeEllipse = new QGraphicsEllipseItem(this);
@@ -30,8 +32,8 @@ void baseTower::setCenterRect(QPointF position){
 
 void baseTower::setCenterPos(QPointF position){
     //Set device to location
-    position.setX(position.x()+16);
-    position.setY(position.y()+16);
+    position.setX(position.x() - (size / 2));
+    position.setY(position.y() - (size / 2));
 
     setPos(position);
 }

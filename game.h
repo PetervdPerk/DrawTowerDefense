@@ -14,6 +14,7 @@
 #include <QGraphicsPathItem>
 #include <QDebug>
 #include <QList>
+#include <QHash>
 #include <QTimer>
 
 
@@ -39,12 +40,12 @@ public slots:
 //    void WaveTimer();
 
 private:
-    void addTower(qreal x = 0, qreal y = 0);
-    void addLaserTower(qreal x = 0, qreal y = 0);
+    void addTower(int id);
+    void addLaserTower(int id);
 
     View* gameView;
+    QHash<int, baseTower*> towers;
     QList<baseEnemy*> enemies;
-    QList<baseTower*> towers;
     enemyHelper* enemyHelp;
     waveManager* wavesMgr;
     QPainterPath path;

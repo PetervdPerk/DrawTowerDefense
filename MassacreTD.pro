@@ -36,7 +36,10 @@ SOURCES += main.cpp\
     vision/visionmanager.cpp \
     tower/bullet/laserbullet.cpp \
     tower/lasertower.cpp \
-    vision/visionview.cpp
+    vision/visionview.cpp \
+    vision/task/abstractprocesstask.cpp \
+    vision/task/glyphprocesstask.cpp \
+    vision/task/boundingrecttask.cpp
 
 HEADERS  += mainwindow.h \
     view.h \
@@ -61,7 +64,10 @@ HEADERS  += mainwindow.h \
     vision/visionmanager.h \
     tower/bullet/laserbullet.h \
     tower/lasertower.h \
-    vision/visionview.h
+    vision/visionview.h \
+    vision/task/abstractprocesstask.h \
+    vision/task/glyphprocesstask.h \
+    vision/task/boundingrecttask.h
 
 FORMS    += mainwindow.ui \
     vision/visionview.ui

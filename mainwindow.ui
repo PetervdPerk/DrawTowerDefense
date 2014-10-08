@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>818</width>
-    <height>618</height>
+    <height>658</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -15,12 +15,27 @@
   </property>
   <widget class="QWidget" name="centralWidget">
    <layout class="QGridLayout" name="gridLayout">
+    <property name="leftMargin">
+     <number>0</number>
+    </property>
+    <property name="topMargin">
+     <number>0</number>
+    </property>
+    <property name="rightMargin">
+     <number>0</number>
+    </property>
+    <property name="bottomMargin">
+     <number>0</number>
+    </property>
+    <property name="spacing">
+     <number>0</number>
+    </property>
     <item row="0" column="0">
      <widget class="QGraphicsView" name="graphicsView">
       <property name="minimumSize">
        <size>
         <width>800</width>
-        <height>640</height>
+        <height>600</height>
        </size>
       </property>
       <property name="maximumSize">

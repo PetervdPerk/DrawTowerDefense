@@ -11,7 +11,7 @@
 #include <QPen>
 #include <QTimer>
 
-class baseTower : public QObject, public QGraphicsEllipseItem
+class baseTower : public QObject, public QGraphicsRectItem
 {
     Q_OBJECT
     Q_PROPERTY(QPointF pos READ pos WRITE setCenterRect)
@@ -35,6 +35,7 @@ public slots:
     virtual void shoot();
 
 private:
+    const int size = 68;
    // QGraphicsEllipseItem *rangeEllipse;
     //QList<baseEnemy*> *enemies;
    // qreal angle, speed;

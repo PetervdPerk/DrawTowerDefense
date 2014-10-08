@@ -1,7 +1,8 @@
 #include "processingthread.h"
 #include <QDebug>
 
-vision::ProcessingThread::ProcessingThread(ImageBuffer *imgBuffer, int deviceNumber) : QThread()
+vision::ProcessingThread::ProcessingThread(ImageBuffer *imgBuffer, int deviceNumber,
+                                           vision::task::abstractProcessTask *startTask) : QThread()
 {
     // Save Device Number
     this->deviceNumber=deviceNumber;
@@ -11,8 +12,7 @@ vision::ProcessingThread::ProcessingThread(ImageBuffer *imgBuffer, int deviceNum
     sampleNumber=0;
     fpsSum=0;
     fps.clear();
-    //statsData.averageFPS=0;
-    //statsData.nFramesProcessed=0;
+    this->processTask = startTask;
 }
 
 QImage vision::ProcessingThread::MatToQImage(const Mat& mat)
@@ -82,64 +82,19 @@ void vision::ProcessingThread::run()
 
 
         cv::flip(currentFrame,currentFrame, 0);
-        cv::flip(currentFrame,TheInputImage, 1);
+        cv::flip(currentFrame,currentFrame, 1);
+        //Rotate 180 degrees
 
-
-        //index++; //number of images captured
-        double tick = (double)getTickCount();//for checking the speed
-        //Detection of markers in the image passed
-        MDetector.detect(TheInputImage,TheMarkers,TheCameraParameters,TheMarkerSize);
-        //chekc the speed by calculating the mean speed of all iterations
-        AvrgTime.first+=((double)getTickCount()-tick)/getTickFrequency();
-        AvrgTime.second++;
-        cout<<"\rTime detection="<<1000*AvrgTime.first/AvrgTime.second<<" milliseconds nmarkers="<<TheMarkers.size()<< std::flush;
+        processTask->process(currentFrame);
 
         if(showImage){
-            //print marker info and draw the markers in image
-            TheInputImage.copyTo(TheInputImageCopy);
-
-            for (unsigned int i=0;i<TheMarkers.size();i++) {
-                cout<<endl<<TheMarkers[i];
-                TheMarkers[i].draw(TheInputImageCopy,Scalar(0,0,255),1);
-            }
-            if (TheMarkers.size()!=0)            cout<<endl;
-            //print other rectangles that contains no valid markers
-            /**     for (unsigned int i=0;i<MDetector.getCandidates().size();i++) {
-          aruco::Marker m( MDetector.getCandidates()[i],999);
-          m.draw(TheInputImageCopy,cv::Scalar(255,0,0));
-      }*/
-
-            //draw a 3d cube in each marker if there is 3d info
-            /* if (  TheCameraParameters.isValid())
-            for (unsigned int i=0;i<TheMarkers.size();i++) {
-                CvDrawingUtils::draw3dCube(TheInputImageCopy,TheMarkers[i],TheCameraParameters);
-                CvDrawingUtils::draw3dAxis(TheInputImageCopy,TheMarkers[i],TheCameraParameters);
-            }*/
-            //DONE! Easy, right?
-            //show input with augmented information and  the thresholded image
-
-
-
-            ////////////////////////////////////
-            // PERFORM IMAGE PROCESSING ABOVE //
-            ////////////////////////////////////
 
             // Convert Mat to QImage
-            frame=MatToQImage(TheInputImageCopy);
-
+            frame=MatToQImage(processTask->getProcessedImage());
 
             // Inform GUI thread of new frame (QImage)
             emit newFrame(frame);
-
         }
-
-        for (unsigned int i=0;i<TheMarkers.size();i++) {
-            QPointF loc;
-            loc.setX(TheMarkers[i].getCenter().x);
-            loc.setY(TheMarkers[i].getCenter().y);
-            emit glyphLoc(loc,TheMarkers[i].id);
-        }
-
         processingMutex.unlock();
 
         // Update statistics
@@ -184,4 +139,10 @@ void vision::ProcessingThread::stop()
 {
     QMutexLocker locker(&doStopMutex);
     doStop=true;
+}
+
+void vision::ProcessingThread::setProcessTask(vision::task::abstractProcessTask* task)
+{
+    QMutexLocker locker(&doStopMutex);
+    this->processTask = task;
 }
