@@ -17,7 +17,7 @@ class visionView : public QDialog
 public:
     explicit visionView(QWidget *parent = 0);
     ~visionView();
-    void addWidgetToVBOX(QWidget *widget);
+    void addLayoutToVBOX(QLayout *layout);
 
 public slots:
     void updateFrame(const QImage &frame);

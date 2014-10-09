@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>640</width>
-    <height>720</height>
+    <height>663</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -44,10 +44,17 @@
      <x>0</x>
      <y>490</y>
      <width>641</width>
-     <height>231</height>
+     <height>161</height>
     </rect>
    </property>
-   <layout class="QVBoxLayout" name="vbox"/>
+   <layout class="QVBoxLayout" name="vbox">
+    <property name="leftMargin">
+     <number>5</number>
+    </property>
+    <property name="rightMargin">
+     <number>5</number>
+    </property>
+   </layout>
   </widget>
  </widget>
  <resources/>

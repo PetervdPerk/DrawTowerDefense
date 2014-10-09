@@ -10,7 +10,7 @@ View::View(QObject *parent, QGraphicsView *view, qreal width, qreal height) :
 
    // view->setViewport(new QGLWidget(QGLFormat(QGL::SampleBuffers))); //GPU rendering :)
 
-    scene = new QGraphicsScene(this);
+    scene = new QGraphicsScene();
     scene->setSceneRect( 0, 0, 800, 600 );
     view->setScene(scene);
     scene->addRect(scene->sceneRect(), QPen(QBrush(QColor("Black")),2));

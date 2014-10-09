@@ -1,6 +1,8 @@
 #include "visionmanager.h"
 #include <QThread>
 #include <QPushButton>
+#include <QHBoxLayout>
+#include <QLabel>
 
 
 vision::visionManager::visionManager(QObject *parent) : QObject(parent)
@@ -32,20 +34,70 @@ void vision::visionManager::enableView(){
     view->show();
 
 
-    QSlider *slider = new QSlider(Qt::Orientation::Horizontal);
-    slider->setMaximum(255);
-    slider->setMinimum(0);
-    view->addWidgetToVBOX(slider);
+    //Generate sliders for GUI
+    QHBoxLayout *threshBox = new QHBoxLayout();
+    QLabel *threshLabel = new QLabel("Rect treshhold");
 
-    QPushButton *btn = new QPushButton("Calibrate");
+    QSlider *threshSlider = new QSlider(Qt::Orientation::Horizontal);
+    threshSlider->setMaximum(255);
+    threshSlider->setMinimum(0);
 
-    view->addWidgetToVBOX(btn);
+    QLabel *threshValue = new QLabel();
+    QObject::connect(threshSlider, SIGNAL(valueChanged(int)), threshValue, SLOT(setNum(int)) );
+    threshSlider->setValue(rectTask->getTreshold());
+
+    threshBox->addWidget(threshLabel);
+    threshBox->addWidget(threshSlider);
+    threshBox->addWidget(threshValue);
+
+    view->addLayoutToVBOX(threshBox);
+
+    QHBoxLayout *whiteBox = new QHBoxLayout();
+    QLabel *whiteLabel = new QLabel("White balance");
+
+    QSlider *whiteSlider = new QSlider(Qt::Orientation::Horizontal);
+    whiteSlider->setMaximum(65535);
+    whiteSlider->setMinimum(0);
+
+    QLabel *whiteValue = new QLabel();
+    QObject::connect(whiteSlider, SIGNAL(valueChanged(int)), whiteValue, SLOT(setNum(int)) );
+    whiteSlider->setValue(capture->getWhiteBalance());
+
+    whiteBox->addWidget(whiteLabel);
+    whiteBox->addWidget(whiteSlider);
+    whiteBox->addWidget(whiteValue);
+
+    view->addLayoutToVBOX(whiteBox);
+
+    QHBoxLayout *exposureBox = new QHBoxLayout();
+    QLabel *exposureLabel = new QLabel("Exposure");
+
+    QSlider *exposureSlider = new QSlider(Qt::Orientation::Horizontal);
+    exposureSlider->setMaximum(65535);
+    exposureSlider->setMinimum(0);
+
+    QLabel *exposureValue = new QLabel();
+    QObject::connect(exposureSlider, SIGNAL(valueChanged(int)), exposureValue, SLOT(setNum(int)) );
+    exposureSlider->setValue(capture->getExposure());
+
+    exposureBox->addWidget(exposureLabel);
+    exposureBox->addWidget(exposureSlider);
+    exposureBox->addWidget(exposureValue);
+
+    view->addLayoutToVBOX(exposureBox);
 
 
-    QObject::connect(btn, SIGNAL(clicked()), rectTask, SLOT(setOk()));
 
-    QObject::connect(slider, SIGNAL(valueChanged(int)), rectTask, SLOT(setThreshold(int)) );
+    QHBoxLayout *btnBox = new QHBoxLayout();
+    QPushButton *btnCalibrate = new QPushButton("Calibrate");
+    btnBox->addWidget(btnCalibrate);
 
+    view->addLayoutToVBOX(btnBox);
+
+    QObject::connect(btnCalibrate, SIGNAL(clicked()), rectTask, SLOT(setOk()));
+    QObject::connect(threshSlider, SIGNAL(valueChanged(int)), rectTask, SLOT(setThreshold(int)) );
+    QObject::connect(whiteSlider, SIGNAL(valueChanged(int)), capture, SLOT(setWhiteBalance(int)) );
+    QObject::connect(exposureSlider, SIGNAL(valueChanged(int)), capture, SLOT(setExposure(int)) );
 }
 
 void vision::visionManager::setROI(QRect roi){

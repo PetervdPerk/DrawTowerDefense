@@ -22,6 +22,6 @@ void vision::visionView::updateFrame(const QImage &frame){
     ui->view->setPixmap(QPixmap::fromImage(frame));
 }
 
-void vision::visionView::addWidgetToVBOX(QWidget *widget){
-    ui->vbox->addWidget(widget);
+void vision::visionView::addLayoutToVBOX(QLayout *layout){
+    ui->vbox->addLayout(layout);
 }

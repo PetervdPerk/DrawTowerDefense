@@ -36,6 +36,13 @@ public:
     bool isCameraConnected();
     int getCameraWidth();
     int getCameraHeight();
+    int getWhiteBalance();
+    int getExposure();
+
+public slots:
+    void setWhiteBalance(int wb);
+    void setExposure(int exp);
+
 
 protected:
     void run();
@@ -57,6 +64,9 @@ private:
     int width;
     int height;
     int AverageFps;
+
+    int whiteBalance = 21845;
+    int exposure = 9169;
 
 #ifdef UNIX
     int v4l2_fd;

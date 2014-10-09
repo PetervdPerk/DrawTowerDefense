@@ -16,6 +16,9 @@ public:
     explicit boundingRectTask(QObject *parent = 0);
     virtual void process(Mat image);
     virtual Mat getProcessedImage();
+    int getTreshold(){
+        return thresh;
+    }
 
 signals:
     void roiRect(QRect roi);

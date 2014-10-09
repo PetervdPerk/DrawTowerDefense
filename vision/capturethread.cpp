@@ -26,14 +26,39 @@ vision::CaptureThread::CaptureThread(ImageBuffer *imgBuffer, int deviceNumber,
     qDebug() << "Get Exposure absolute" << v4l2_get_control(v4l2_fd,V4L2_CID_EXPOSURE_ABSOLUTE);
 
     qDebug() << "Set Auto white balance" << v4l2_set_control(v4l2_fd,V4L2_CID_AUTO_WHITE_BALANCE,0);
-    qDebug() << "Set White balance temperature" << v4l2_set_control(v4l2_fd,V4L2_CID_WHITE_BALANCE_TEMPERATURE,19661);
+    qDebug() << "Set White balance temperature" << v4l2_set_control(v4l2_fd,V4L2_CID_WHITE_BALANCE_TEMPERATURE,whiteBalance);
     qDebug() << "Set Exposure Auto" << v4l2_set_control(v4l2_fd,V4L2_CID_EXPOSURE_AUTO,21845);
-    qDebug() << "Set Exposure absolute" << v4l2_set_control(v4l2_fd,V4L2_CID_EXPOSURE_ABSOLUTE,9169);
-
-    v4l2_close(v4l2_fd);
+    qDebug() << "Set Exposure absolute" << v4l2_set_control(v4l2_fd,V4L2_CID_EXPOSURE_ABSOLUTE,exposure);
 #endif
 
     cap.open(deviceNumber);
+}
+
+
+int vision::CaptureThread::getWhiteBalance() {
+    return whiteBalance;
+}
+
+int vision::CaptureThread::getExposure() {
+    return exposure;
+}
+
+void vision::CaptureThread::setWhiteBalance(int wb) {
+    whiteBalance = wb;
+#ifdef UNIX
+    v4l2_set_control(v4l2_fd,V4L2_CID_WHITE_BALANCE_TEMPERATURE,whiteBalance);
+#else
+    qDebug() << "Set white balance to: " << whiteBalance << "not implemented on windows";
+#endif
+}
+
+void vision::CaptureThread::setExposure(int exp) {
+    exposure = exp;
+#ifdef UNIX
+    v4l2_set_control(v4l2_fd,V4L2_CID_EXPOSURE_ABSOLUTE,exposure);
+#else
+    qDebug() << "Set exposure to: " << exposure << "not implemented on windows";
+#endif
 }
 
 
