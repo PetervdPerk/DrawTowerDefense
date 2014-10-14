@@ -3,10 +3,6 @@
 
 vision::task::glyphProcessTask::glyphProcessTask(QObject *parent) : abstractProcessTask(parent)
 {
-    currentROI.x = 0;
-    currentROI.y = 0;
-    currentROI.width = 640;
-    currentROI.height = 480;
 }
 
 void vision::task::glyphProcessTask::process(Mat image){
@@ -43,13 +39,3 @@ Mat vision::task::glyphProcessTask::getProcessedImage(){
     return processedImage;
 }
 
-
-void vision::task::glyphProcessTask::setROI(QRect roi)
-{
-    currentROI.x = roi.x();
-    currentROI.y = roi.y();
-    currentROI.width = roi.width();
-    currentROI.height = roi.height();
-    widthFactor = (float)(800.00 / currentROI.width);
-    heightFactor = (float)(600.00 / currentROI.height);
-}

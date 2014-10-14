@@ -66,7 +66,7 @@ private:
     int AverageFps;
 
     int whiteBalance = 21845;
-    int exposure = 9169;
+    int exposure = 6169;
 
 #ifdef UNIX
     int v4l2_fd;

@@ -4,15 +4,14 @@
 #include <QHBoxLayout>
 #include <QLabel>
 
-
 vision::visionManager::visionManager(QObject *parent) : QObject(parent)
 {
     buffer = new vision::ImageBuffer();
     buffer->add(0,new vision::Buffer<Mat>(32));
 
     glyphTask = new vision::task::glyphProcessTask(this);
-
     rectTask = new vision::task::boundingRectTask(this);
+    lineTask = new vision::task::lineprocesstask(this);
 
     capture = new vision::CaptureThread(buffer,0,true,640,480);
     capture->start();
@@ -20,10 +19,10 @@ vision::visionManager::visionManager(QObject *parent) : QObject(parent)
     proc = new vision::ProcessingThread(buffer,0,rectTask);
     proc->start();
 
-    QObject::connect(glyphTask, SIGNAL(glyphLoc(QPointF,int)), this, SIGNAL(updateTower(QPointF,int)) );
+    QObject::connect(glyphTask, SIGNAL(glyphLoc(QPointF,int)), this, SIGNAL(glyphLoc(QPointF,int)) ); //Pass glyphLoc through
+    QObject::connect(glyphTask, SIGNAL(glyphLoc(QPointF,int)), this, SLOT(glyphLocSlot(QPointF,int)) );
+    QObject::connect(lineTask, SIGNAL(lineDetected(QPolygonF)), this, SLOT(lineFound(QPolygonF)) );
     QObject::connect(rectTask, SIGNAL(roiRect(QRect)), this, SLOT(setROI(QRect)));
-
-
 }
 
 void vision::visionManager::enableView(){
@@ -33,8 +32,24 @@ void vision::visionManager::enableView(){
 
     view->show();
 
-
     //Generate sliders for GUI
+    QHBoxLayout *cthreshBox = new QHBoxLayout();
+    QLabel *cthreshLabel = new QLabel("Line canny");
+
+    QSlider *cthreshSlider = new QSlider(Qt::Orientation::Horizontal);
+    cthreshSlider->setMaximum(255);
+    cthreshSlider->setMinimum(0);
+
+    QLabel *cthreshValue = new QLabel();
+    QObject::connect(cthreshSlider, SIGNAL(valueChanged(int)), cthreshValue, SLOT(setNum(int)) );
+    cthreshSlider->setValue(lineTask->getTreshold());
+
+    cthreshBox->addWidget(cthreshLabel);
+    cthreshBox->addWidget(cthreshSlider);
+    cthreshBox->addWidget(cthreshValue);
+
+    view->addLayoutToVBOX(cthreshBox);
+
     QHBoxLayout *threshBox = new QHBoxLayout();
     QLabel *threshLabel = new QLabel("Rect treshhold");
 
@@ -86,8 +101,6 @@ void vision::visionManager::enableView(){
 
     view->addLayoutToVBOX(exposureBox);
 
-
-
     QHBoxLayout *btnBox = new QHBoxLayout();
     QPushButton *btnCalibrate = new QPushButton("Calibrate");
     btnBox->addWidget(btnCalibrate);
@@ -96,13 +109,29 @@ void vision::visionManager::enableView(){
 
     QObject::connect(btnCalibrate, SIGNAL(clicked()), rectTask, SLOT(setOk()));
     QObject::connect(threshSlider, SIGNAL(valueChanged(int)), rectTask, SLOT(setThreshold(int)) );
+    QObject::connect(cthreshSlider, SIGNAL(valueChanged(int)), lineTask, SLOT(setThreshold(int)) );
     QObject::connect(whiteSlider, SIGNAL(valueChanged(int)), capture, SLOT(setWhiteBalance(int)) );
     QObject::connect(exposureSlider, SIGNAL(valueChanged(int)), capture, SLOT(setExposure(int)) );
 }
 
-void vision::visionManager::setROI(QRect roi){
-    glyphTask->setROI(roi);
+void vision::visionManager::lineFound(QPolygonF line){
+    QObject::disconnect(glyphTask, SIGNAL(glyphLoc(QPointF,int)), this, SLOT(glyphLocSlot(QPointF,int)) );
     proc->setProcessTask(glyphTask);
+    emit lineDetected(line);
+}
+
+void vision::visionManager::setROI(QRect roi){
+    this->roi = roi;
+    glyphTask->setROI(roi);
+    lineTask->setROI(roi);
+    proc->setProcessTask(glyphTask);
+}
+
+void vision::visionManager::glyphLocSlot(QPointF loc,int id){
+    glyphs.insert(id,loc);
+    if(glyphs.contains(1) && glyphs.contains(2)){
+        proc->setProcessTask(lineTask);
+    }
 }
 
 vision::visionManager::~visionManager(){

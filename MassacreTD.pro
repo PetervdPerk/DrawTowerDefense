@@ -39,7 +39,9 @@ SOURCES += main.cpp\
     vision/visionview.cpp \
     vision/task/abstractprocesstask.cpp \
     vision/task/glyphprocesstask.cpp \
-    vision/task/boundingrecttask.cpp
+    vision/task/boundingrecttask.cpp \
+    vision/task/lineprocesstask.cpp \
+    gameline.cpp
 
 HEADERS  += mainwindow.h \
     view.h \
@@ -67,7 +69,9 @@ HEADERS  += mainwindow.h \
     vision/visionview.h \
     vision/task/abstractprocesstask.h \
     vision/task/glyphprocesstask.h \
-    vision/task/boundingrecttask.h
+    vision/task/boundingrecttask.h \
+    vision/task/lineprocesstask.h \
+    gameline.h
 
 FORMS    += mainwindow.ui \
     vision/visionview.ui

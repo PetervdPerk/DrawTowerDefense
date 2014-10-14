@@ -20,18 +20,14 @@ MainWindow::MainWindow(QWidget *parent) :
 
     //glyphDetector* detect = new glyphDetector(false);
 
-
     vision::visionManager *mgr = new vision::visionManager();
 
     mgr->enableView();
 
-    QObject::connect(mgr, SIGNAL(updateTower(QPointF,int)), gm , SLOT(updateTower(QPointF,int)));
-
-
-
+    QObject::connect(mgr, SIGNAL(glyphLoc(QPointF,int)), gm , SLOT(glyphLoc(QPointF,int)));
+    QObject::connect(mgr, SIGNAL(lineDetected(QPolygonF)), gm , SLOT(drawLine(QPolygonF)));
 
     //detect->start();
-
 }
 
 MainWindow::~MainWindow()

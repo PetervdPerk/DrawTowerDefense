@@ -2,7 +2,6 @@
 #define GLYPHPROCESSTASK_H
 
 #include <QPointF>
-#include <QRect>
 
 #include "abstractprocesstask.h"
 
@@ -21,7 +20,6 @@ public:
     glyphProcessTask(QObject *parent = 0);
     virtual void process(Mat image);
     virtual Mat getProcessedImage();
-    void setROI(QRect roi);
 
 private:
     bool showImage = true;
@@ -37,10 +35,6 @@ private:
     double ThresParam1,ThresParam2;
     int iThresParam1,iThresParam2;
     int waitTime=0;
-
-    Rect currentROI;
-    float widthFactor;
-    float heightFactor;
 
 signals:
     void glyphLoc(QPointF,int);

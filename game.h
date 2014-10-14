@@ -9,6 +9,7 @@
 #include "wavemanager.h"
 #include "view.h"
 #include "gameUIenum.h"
+#include "gameline.h"
 #include <QPropertyAnimation>
 #include <QPainterPath>
 #include <QGraphicsPathItem>
@@ -35,8 +36,8 @@ public slots:
     void enemyDown(baseEnemy *enemy);
     void wave();
     void UpdateMoney();
-    void CheckTowers();
-    void updateTower(QPointF loc, int id);
+    void glyphLoc(QPointF loc, int id);
+    void drawLine(QPolygonF line);
 //    void WaveTimer();
 
 private:
@@ -49,11 +50,15 @@ private:
     enemyHelper* enemyHelp;
     waveManager* wavesMgr;
     QPainterPath path;
+    bool paintOnce = true;
     QTimer moneyTimer;
 
     qreal life = 100;
     qreal money = 2000;
     qreal wave_stat = 1;
+
+    bool gameStarted = false;
+
   //  qreal wave_timer = 0;
 
 };
