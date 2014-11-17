@@ -26,6 +26,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     QObject::connect(mgr, SIGNAL(glyphLoc(QPointF,int)), gm , SLOT(glyphLoc(QPointF,int)));
     QObject::connect(mgr, SIGNAL(lineDetected(QPolygonF)), gm , SLOT(drawLine(QPolygonF)));
+    QObject::connect(mgr, SIGNAL(startDraw()), gm, SLOT(startDraw()));
 
     //detect->start();
 }

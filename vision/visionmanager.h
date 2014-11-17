@@ -27,6 +27,7 @@ public:
 signals:
     void glyphLoc(QPointF loc, int id);
     void lineDetected(QPolygonF);
+    void startDraw();
 
 public slots:
     void setROI(QRect roi);

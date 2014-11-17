@@ -27,6 +27,9 @@ public:
 
     void addItem(QGraphicsItem * item);
     void removeItem(QGraphicsItem * item);
+    void setBackground(QColor color);
+
+
 
 signals:
 

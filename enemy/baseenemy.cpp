@@ -70,7 +70,7 @@ void baseEnemy::updateEnemy(){
         this->setBrush(QBrush(QColor("white")));
         break;
     }
-
+    //TODO bug
     animation->setDuration(helper->getDurationOfPath(health));
 }
 

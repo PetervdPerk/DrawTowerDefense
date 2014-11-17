@@ -7,8 +7,13 @@ game::game(View* gameView, QObject *parent) :
     //TODO DRAW WELCOME screen
 }
 
+void game::startDraw(){
+    gameView->setBackground(QColor("Black"));
+}
+
 void game::drawLine(QPolygonF line){
     if(paintOnce){
+        gameView->setBackground(QColor("White"));
         path.addPolygon(line.mid(0,line.length()/2));
 
         QGraphicsItem* graphicsLine = new GameLine(line); //Filled line

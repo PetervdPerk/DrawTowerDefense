@@ -41,7 +41,8 @@ SOURCES += main.cpp\
     vision/task/glyphprocesstask.cpp \
     vision/task/boundingrecttask.cpp \
     vision/task/lineprocesstask.cpp \
-    gameline.cpp
+    gameline.cpp \
+    test.c
 
 HEADERS  += mainwindow.h \
     view.h \

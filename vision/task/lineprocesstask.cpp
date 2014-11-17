@@ -17,7 +17,7 @@ void vision::task::lineprocesstask::process(Mat image){
     //threshold( processedImage, processedImage, 128, 255, THRESH_BINARY );
     Canny( processedImage, processedImage, thresh, thresh*ratio, kernel_size );
     int erosion_type = MORPH_CROSS;
-    int erosion_size = 3;
+    int erosion_size = 1;
 
     Mat element = getStructuringElement( erosion_type,
                                          Size( 2*erosion_size + 1, 2*erosion_size+1 ),

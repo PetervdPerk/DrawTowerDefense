@@ -24,6 +24,10 @@ View::View(QObject *parent, QGraphicsView *view, qreal width, qreal height) :
     resizeHandler();
 }
 
+void View::setBackground(QColor color){
+    view->setBackgroundBrush(QBrush(color));
+}
+
 void View::addItem(QGraphicsItem * item){
     scene->addItem(item);
 }

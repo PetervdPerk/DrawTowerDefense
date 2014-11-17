@@ -125,11 +125,13 @@ void vision::visionManager::setROI(QRect roi){
     glyphTask->setROI(roi);
     lineTask->setROI(roi);
     proc->setProcessTask(glyphTask);
+    emit startDraw();
 }
 
 void vision::visionManager::glyphLocSlot(QPointF loc,int id){
     glyphs.insert(id,loc);
     if(glyphs.contains(1) && glyphs.contains(2)){
+       // QThread::sleep(1);
         proc->setProcessTask(lineTask);
     }
 }

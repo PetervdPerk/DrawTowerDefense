@@ -38,6 +38,7 @@ public slots:
     void UpdateMoney();
     void glyphLoc(QPointF loc, int id);
     void drawLine(QPolygonF line);
+    void startDraw();
 //    void WaveTimer();
 
 private:
@@ -53,7 +54,7 @@ private:
     bool paintOnce = true;
     QTimer moneyTimer;
 
-    qreal life = 100;
+    qreal life = 500;
     qreal money = 2000;
     qreal wave_stat = 1;
 
