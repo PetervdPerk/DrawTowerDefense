@@ -79,7 +79,8 @@ FORMS    += mainwindow.ui \
 
 
 unix {
-    LIBS += -L/usr/lib/x86_64-linux-gnu/ -L/usr/local/include/ -lopencv_core  -lopencv_highgui -lopencv_imgproc -laruco -lv4l2
+    LIBS += -L/usr/lib/x86_64-linux-gnu/ -L/usr/local/include/
+    LIBS += -lopencv_core  -lopencv_highgui -lopencv_imgproc -laruco -lv4l2
 }
 win32 {
 INCLUDEPATH += "C:\opencv\build\include"
