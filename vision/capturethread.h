@@ -15,7 +15,7 @@
 
 #ifdef yocto
 #include "vision/ov_video_capture.h"
-#else
+#endif
 
 //OpenCV
 #include <opencv2/highgui/highgui.hpp>
