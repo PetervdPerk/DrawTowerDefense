@@ -13,7 +13,7 @@
 #include <fcntl.h>
 #endif
 
-#ifdef yocto
+#ifdef YOCTO
 #include "vision/ov_video_capture.h"
 #endif
 
@@ -54,7 +54,7 @@ protected:
 private:
     void updateFPS(int);
     ImageBuffer *imgBuffer;
-#ifdef yocto
+#ifdef YOCTO
     jafp::OvVideoCapture cap;
 #else
     VideoCapture cap;
