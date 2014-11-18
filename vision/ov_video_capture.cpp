@@ -14,6 +14,7 @@
 #include <errno.h>
 #include <sys/ioctl.h>
 #include <sys/mman.h>
+#include <QDebug>
 
 namespace jafp {
 
@@ -37,9 +38,11 @@ OvVideoCapture::~OvVideoCapture() {
 
 bool OvVideoCapture::open() {
 	if(!open_internal()) {
+		qDebug() << "ERROR: open internal failed";
 		return false;
 	}
 	if (!start_capturing()) {
+		qDebug() << "ERROR: start capturing failed";
 		return false;
 	}
 	is_opened_ = true;
@@ -67,8 +70,13 @@ bool OvVideoCapture::grab() {
 
 	// Give it a shot if the device hasn't been opened
 	// at this point
+	
+	qDebug() << "OvVideoCapture::grab()";
+	
 	if (!is_opened_) {
+		qDebug() << "grab !is_opened_";
 		if (!open()) {
+			qDebug() << "grab !open";
 			return false;
 		}
 	}
@@ -77,6 +85,7 @@ bool OvVideoCapture::grab() {
 	capture_buf.memory = V4L2_MEMORY_MMAP;
 	
 	if (ioctl(fd_, VIDIOC_DQBUF, &capture_buf) < 0) {
+		qDebug() << "Grab VIDIOC_DQBUF failed";
 		return false;
 	}
 	// Do not copy anything here, but save the index of the current
@@ -84,6 +93,7 @@ bool OvVideoCapture::grab() {
 	current_buffer_index_ = capture_buf.index;
 
 	if (ioctl (fd_, VIDIOC_QBUF, &capture_buf) < 0) {
+		qDebug() << "Grab VIDIOC_QBUF failed";
 		return false;
 	}
 	return true;
@@ -144,7 +154,7 @@ bool OvVideoCapture::start_capturing() {
 		return false;
 	}
 	
-	return false;
+	return true;
 }
 
 bool OvVideoCapture::open_internal() {
@@ -159,20 +169,24 @@ bool OvVideoCapture::open_internal() {
 	frame_size_ = mode_.width * mode_.height * DefaultFormatChannels;
 
 	if ((fd_ = ::open("/dev/video0", O_RDWR, 0)) < 0) {
+        qDebug() << "Open /dev/video0 failed";
 		return false;
 	}
 	
 	if (ioctl(fd_, VIDIOC_S_INPUT, &input) < 0) {
-		close(fd_);
-		return false;
+        qDebug() << "VIDIOC_S_INPUT failed";
+        //close(fd_);
+        //return false;
 	}
 	if (ioctl(fd_, VIDIOC_G_STD, &id) < 0) {
-		close(fd_);
-		return false;
+        qDebug() << "VIDIOC_G_STD failed";
+        //close(fd_);
+        //return false;
 	}
 	if (ioctl(fd_, VIDIOC_S_STD, &id) < 0) {
-		close(fd_);
-		return false;
+        qDebug() << "VIDIOC_S_STD failed";
+        //close(fd_);
+        //return false;
 	}
 
 	parm.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
@@ -181,8 +195,9 @@ bool OvVideoCapture::open_internal() {
 	parm.parm.capture.capturemode = mode_.capture_mode;
 	
 	if (ioctl (fd_, VIDIOC_S_PARM, &parm) < 0) {
-		close(fd_);
-		return false;
+        qDebug() << "VIDIOC_S_PARM failed";
+        //close(fd_);
+        //return false;
 	}
 	
 	crop.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
@@ -192,7 +207,8 @@ bool OvVideoCapture::open_internal() {
 	crop.c.height = mode_.height;
 	
 	if (ioctl (fd_, VIDIOC_S_CROP, &crop) < 0) {
-		return false;
+        qDebug() << "VIDIOC_S_CROP failed";
+        //return false;
 	}
 
 	memset (&fmt, 0, sizeof(fmt));
@@ -206,7 +222,8 @@ bool OvVideoCapture::open_internal() {
 	fmt.fmt.pix.field = V4L2_FIELD_NONE;
 
 	if (ioctl (fd_, VIDIOC_S_FMT, &fmt) < 0){
-		close(fd_);
+        qDebug() << "VIDIOC_S_FMT failed";
+        close(fd_);
 		return false;
 	}
 

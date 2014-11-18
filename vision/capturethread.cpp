@@ -108,7 +108,7 @@ void vision::CaptureThread::run()
         imgBuffer->getByDeviceNumber(deviceNumber)->add(grabbedFrame, dropFrameIfBufferFull);
 
         // Update statistics
-        updateFPS(captureTime);
+        //updateFPS(captureTime);
         //statsData.nFramesProcessed++;
         // Inform GUI of updated statistics
         //emit updateStatisticsInGUI(statsData);
@@ -157,7 +157,15 @@ bool vision::CaptureThread::isCameraConnected()
 bool vision::CaptureThread::connectToCamera()
 {
     // Open camera
-    bool camOpenResult = cap.open(deviceNumber);
+    bool camOpenResult;
+#ifdef YOCTO
+    camOpenResult = cap.open();
+    if (!camOpenResult) {
+        qDebug() << "OV5640 capture open failed";
+    }
+#else
+    camOpenResult = cap.open(deviceNumber);
+#endif
     // Set resolution
     if(width != -1)
         cap.set(CV_CAP_PROP_FRAME_WIDTH, width);
