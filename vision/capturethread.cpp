@@ -1,7 +1,10 @@
 #include "capturethread.h"
 
 vision::CaptureThread::CaptureThread(ImageBuffer *imgBuffer, int deviceNumber,
-                             bool dropFrameIfBufferFull, int width, int height) : QThread()
+                                     bool dropFrameIfBufferFull, int width, int height) : QThread()
+  #ifdef yocto
+  ,cap(jafp::OvVideoCapture::OV_MODE_320_240_30)
+  #endif
 {
     // Save passed parameters
     this->dropFrameIfBufferFull=dropFrameIfBufferFull;
@@ -31,8 +34,13 @@ vision::CaptureThread::CaptureThread(ImageBuffer *imgBuffer, int deviceNumber,
     qDebug() << "Set Exposure absolute" << v4l2_set_control(v4l2_fd,V4L2_CID_EXPOSURE_ABSOLUTE,exposure);
 #endif
 
-    //cap.open(deviceNumber);
-    cap.open("mfw_v4lsrc ! mfw_ipucsc ! video/x-raw-rgb ! appsink");
+#ifdef yocto
+    if (!cap.open()) {
+        qDebug() << "OV5640 capture open failed";
+    }
+#else
+    cap.open(deviceNumber);
+#endif
 }
 
 

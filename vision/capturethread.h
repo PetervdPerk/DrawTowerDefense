@@ -13,6 +13,10 @@
 #include <fcntl.h>
 #endif
 
+#ifdef yocto
+#include "vision/ov_video_capture.h"
+#else
+
 //OpenCV
 #include <opencv2/highgui/highgui.hpp>
 
@@ -50,7 +54,11 @@ protected:
 private:
     void updateFPS(int);
     ImageBuffer *imgBuffer;
+#ifdef yocto
+    jafp::OvVideoCapture cap;
+#else
     VideoCapture cap;
+#endif
     Mat grabbedFrame;
     QTime t;
     QMutex doStopMutex;
