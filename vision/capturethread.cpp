@@ -18,7 +18,7 @@ vision::CaptureThread::CaptureThread(ImageBuffer *imgBuffer, int deviceNumber,
     fpsSum=0;
     fps.clear();
 
-#ifdef UNIX
+#if defined(UNIX) && !defined(yocto)
     devName.append(QString::number(deviceNumber));
     v4l2_fd = v4l2_open(devName.toStdString().c_str(), O_RDWR, 0);
     if (v4l2_fd < 0) {
