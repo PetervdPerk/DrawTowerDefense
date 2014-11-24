@@ -7,7 +7,7 @@
 vision::visionManager::visionManager(QObject *parent) : QObject(parent)
 {
     buffer = new vision::ImageBuffer();
-    buffer->add(0,new vision::Buffer<Mat>(32));
+    buffer->add(0,new vision::Buffer<Mat>(64));
 
     glyphTask = new vision::task::glyphProcessTask(this);
     rectTask = new vision::task::boundingRectTask(this);

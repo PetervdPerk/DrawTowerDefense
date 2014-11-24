@@ -22,6 +22,9 @@ public:
 public slots:
     void updateFrame(const QImage &frame);
 
+private slots:
+    void on_closeButton_clicked();
+
 private:
     Ui::visionView *ui;
 };

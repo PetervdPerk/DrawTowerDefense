@@ -81,16 +81,16 @@ void vision::ProcessingThread::run()
         ////////////////////////////////////
 
 
-        cv::flip(currentFrame,currentFrame, 0);
-        cv::flip(currentFrame,currentFrame, 1);
+        //cv::flip(currentFrame,currentFrame, 0);
+        //cv::flip(currentFrame,currentFrame, 1);
         //Rotate 180 degrees
 
-        //processTask->process(currentFrame);
+        processTask->process(currentFrame);
 
         if(showImage){
 
             // Convert Mat to QImage
-            frame=MatToQImage(currentFrame);
+            frame=MatToQImage(processTask->getProcessedImage());
 
             // Inform GUI thread of new frame (QImage)
             emit newFrame(frame);

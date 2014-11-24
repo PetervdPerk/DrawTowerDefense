@@ -104,8 +104,10 @@ LIBS += "C:\opencv\build\x86_mingw\CMakeFiles\bin\libopencv_calib3d249.dll" \
 yocto {
 message("Yocto build")
 DEFINES += YOCTO
-SOURCES += vision/ov_video_capture.cpp
-HEADERS  += vision/ov_video_capture.h
+SOURCES += vision/ov_video_capture.cpp \
+	   vision/ipu_csc.c
+HEADERS  += vision/ov_video_capture.h \
+	    vision/ipu_csc.h 
 }
 
 

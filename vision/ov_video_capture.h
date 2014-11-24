@@ -11,6 +11,10 @@
 #include <opencv2/core/core.hpp>
 #include <linux/videodev2.h>
 
+extern "C" {
+	#include "ipu_csc.h"
+}
+
 namespace jafp {
 
 struct OvVideoMode {
@@ -38,6 +42,7 @@ public:
 	// Modes
 	static const OvVideoMode OV_MODE_640_480_30;
 	static const OvVideoMode OV_MODE_320_240_30;
+	static const OvVideoMode OV_MODE_640_480_15;
 	
 	OvVideoCapture(const OvVideoMode& mode = OV_MODE_320_240_30);
 	virtual ~OvVideoCapture();
@@ -56,6 +61,10 @@ public:
 	// Grabs a single frame from the image sensor
 	bool grab();
 	
+	virtual bool set(int propId, double value){
+}
+virtual double get(int propId){
+} 
 	// Decodes the grabbed video frame and returns it to the given
 	// image structure.
 	bool retrieve(cv::Mat& image);
@@ -69,19 +78,18 @@ public:
 		return (*this);
 	}
 
-    virtual bool set(int propId, double value){
-
-    }
-
-    virtual double get(int propId){
-
-    }
-
 private:
 	int fd_;
 	int current_buffer_index_;
 	int frame_size_;
 	bool is_opened_;
+	unsigned char* buffer_;
+
+	// Use the iMX6 IPU to do color space conversion
+	// See http://github.com/jafp/imx6_ipu_csc
+	ipu_csc_t ipu_csc_;	
+	ipu_csc_format_t ipu_input_format_;
+	ipu_csc_format_t ipu_output_format_;
 
 	OvFrameBuffer buffers_[NumBuffers];
 	const OvVideoMode& mode_;

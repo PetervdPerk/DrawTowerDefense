@@ -1,3 +1,9 @@
+/*
+ * Copyright 2014 Jacob Aslund <jacob@itbuster.dk>
+ *
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ */
 
 #include "ov_video_capture.h"
 
@@ -14,35 +20,45 @@
 #include <errno.h>
 #include <sys/ioctl.h>
 #include <sys/mman.h>
-#include <QDebug>
 
 namespace jafp {
 
 const OvVideoMode OvVideoCapture::OV_MODE_320_240_30 = { 320, 240, 30, 1 };
 const OvVideoMode OvVideoCapture::OV_MODE_640_480_30 = { 640, 480, 30, 0 };
+const OvVideoMode OvVideoCapture::OV_MODE_640_480_15 = { 640, 480, 15, 0 };
 
-static void to_gray(const OvFrameBuffer* input, unsigned char* output) {
-	int i = 0, j = 0, size = input->length;
-	for (; i < size; i += 2) {
-		output[j] = input->start[i + 1];
+
+static void to_gray(const unsigned char* input, unsigned char* output, int length) {
+	int i = 0, j = 0;
+	for (; i < length; i += 2) {
+		output[j] = input[i + 1];
 		j += 1;
 	}
 }
 
+
 OvVideoCapture::OvVideoCapture(const OvVideoMode& mode) 
-	: mode_(mode) { }
+	: mode_(mode) { 
+}
 
 OvVideoCapture::~OvVideoCapture() {
+	if (buffer_) {
+		delete[] buffer_;
+	}
+	ipu_csc_close(&ipu_csc_);
 	release();
 }
 
 bool OvVideoCapture::open() {
+    ipu_input_format_ = { mode_.width, mode_.height, 16, V4L2_PIX_FMT_UYVY }; //OV5640 default color format
+    ipu_output_format_ = { mode_.width, mode_.height, 24, V4L2_PIX_FMT_BGR24 }; //OpenCV color format
+
+	ipu_csc_init(&ipu_csc_, &ipu_input_format_, &ipu_output_format_);
+
 	if(!open_internal()) {
-		qDebug() << "ERROR: open internal failed";
 		return false;
 	}
 	if (!start_capturing()) {
-		qDebug() << "ERROR: start capturing failed";
 		return false;
 	}
 	is_opened_ = true;
@@ -70,13 +86,8 @@ bool OvVideoCapture::grab() {
 
 	// Give it a shot if the device hasn't been opened
 	// at this point
-	
-	qDebug() << "OvVideoCapture::grab()";
-	
 	if (!is_opened_) {
-		qDebug() << "grab !is_opened_";
 		if (!open()) {
-			qDebug() << "grab !open";
 			return false;
 		}
 	}
@@ -85,15 +96,14 @@ bool OvVideoCapture::grab() {
 	capture_buf.memory = V4L2_MEMORY_MMAP;
 	
 	if (ioctl(fd_, VIDIOC_DQBUF, &capture_buf) < 0) {
-		qDebug() << "Grab VIDIOC_DQBUF failed";
 		return false;
 	}
 	// Do not copy anything here, but save the index of the current
 	// frame buffer for later use (e.g. in retrieve)
 	current_buffer_index_ = capture_buf.index;
+	memcpy(buffer_, buffers_[capture_buf.index].start, frame_size_);
 
 	if (ioctl (fd_, VIDIOC_QBUF, &capture_buf) < 0) {
-		qDebug() << "Grab VIDIOC_QBUF failed";
 		return false;
 	}
 	return true;
@@ -104,10 +114,9 @@ bool OvVideoCapture::retrieve(cv::Mat& image) {
 		return false;
 	}	
 
-	cv::Mat temp(mode_.height, mode_.width, CV_8U);
-	// Possibly use IPU to perform CSC
-	to_gray(&buffers_[current_buffer_index_], temp.data);
-	temp.copyTo(image);
+	image.create(mode_.height, mode_.width, CV_8UC3);
+	//to_gray(buffer_, image.data, frame_size_);
+	ipu_csc_convert(&ipu_csc_, buffer_, image.data);
 
 	return true;
 }
@@ -167,26 +176,23 @@ bool OvVideoCapture::open_internal() {
 
 	// Mode's size combined with default format's number of channels
 	frame_size_ = mode_.width * mode_.height * DefaultFormatChannels;
+	buffer_ = new unsigned char[frame_size_];
 
 	if ((fd_ = ::open("/dev/video0", O_RDWR, 0)) < 0) {
-        qDebug() << "Open /dev/video0 failed";
 		return false;
 	}
 	
 	if (ioctl(fd_, VIDIOC_S_INPUT, &input) < 0) {
-        qDebug() << "VIDIOC_S_INPUT failed";
-        //close(fd_);
-        //return false;
+		close(fd_);
+		return false;
 	}
 	if (ioctl(fd_, VIDIOC_G_STD, &id) < 0) {
-        qDebug() << "VIDIOC_G_STD failed";
-        //close(fd_);
-        //return false;
+		close(fd_);
+		return false;
 	}
 	if (ioctl(fd_, VIDIOC_S_STD, &id) < 0) {
-        qDebug() << "VIDIOC_S_STD failed";
-        //close(fd_);
-        //return false;
+		close(fd_);
+		return false;
 	}
 
 	parm.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
@@ -195,9 +201,8 @@ bool OvVideoCapture::open_internal() {
 	parm.parm.capture.capturemode = mode_.capture_mode;
 	
 	if (ioctl (fd_, VIDIOC_S_PARM, &parm) < 0) {
-        qDebug() << "VIDIOC_S_PARM failed";
-        //close(fd_);
-        //return false;
+		close(fd_);
+		return false;
 	}
 	
 	crop.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
@@ -207,8 +212,7 @@ bool OvVideoCapture::open_internal() {
 	crop.c.height = mode_.height;
 	
 	if (ioctl (fd_, VIDIOC_S_CROP, &crop) < 0) {
-        qDebug() << "VIDIOC_S_CROP failed";
-        //return false;
+		return false;
 	}
 
 	memset (&fmt, 0, sizeof(fmt));
@@ -222,8 +226,7 @@ bool OvVideoCapture::open_internal() {
 	fmt.fmt.pix.field = V4L2_FIELD_NONE;
 
 	if (ioctl (fd_, VIDIOC_S_FMT, &fmt) < 0){
-        qDebug() << "VIDIOC_S_FMT failed";
-        close(fd_);
+		close(fd_);
 		return false;
 	}
 

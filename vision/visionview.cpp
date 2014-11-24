@@ -25,3 +25,8 @@ void vision::visionView::updateFrame(const QImage &frame){
 void vision::visionView::addLayoutToVBOX(QLayout *layout){
     ui->vbox->addLayout(layout);
 }
+
+void vision::visionView::on_closeButton_clicked()
+{
+    close();
+}
