@@ -20,6 +20,7 @@
 #include <errno.h>
 #include <sys/ioctl.h>
 #include <sys/mman.h>
+#include <linux/v4l2-controls.h>
 
 namespace jafp {
 

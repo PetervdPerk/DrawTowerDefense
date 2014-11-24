@@ -9,8 +9,11 @@ void vision::task::boundingRectTask::process(Mat image){
 
     image.copyTo(processedImage);
 
-    cvtColor( processedImage, src_gray, CV_BGR2GRAY );
-    blur( src_gray, src_gray, Size(3,3) );
+#ifndef YOCTO
+    cvtColor( processedImage, processedImage, CV_BGR2GRAY );
+#endif
+
+    blur( processedImage, processedImage, Size(3,3) );
 
     /// Detect edges using Threshold
     threshold( src_gray, threshold_output, thresh, 255, THRESH_BINARY );
