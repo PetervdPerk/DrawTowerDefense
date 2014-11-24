@@ -3,7 +3,7 @@
 vision::CaptureThread::CaptureThread(ImageBuffer *imgBuffer, int deviceNumber,
                                      bool dropFrameIfBufferFull, int width, int height) : QThread()
   #ifdef YOCTO
-  ,cap(jafp::OvVideoCapture::OV_MODE_640_480_15)
+  ,cap(jafp::OvVideoCapture::OV_MODE_640_480_30)
   #endif
 {
     // Save passed parameters
@@ -54,7 +54,9 @@ int vision::CaptureThread::getExposure() {
 
 void vision::CaptureThread::setWhiteBalance(int wb) {
     whiteBalance = wb;
-#ifdef UNIX
+#ifdef YOCTO
+    cap.set_control(V4L2_CID_WHITE_BALANCE_TEMPERATURE,whiteBalance);
+#elif defined(UNIX)
     v4l2_set_control(v4l2_fd,V4L2_CID_WHITE_BALANCE_TEMPERATURE,whiteBalance);
 #else
     qDebug() << "Set white balance to: " << whiteBalance << "not implemented on windows";
@@ -63,7 +65,9 @@ void vision::CaptureThread::setWhiteBalance(int wb) {
 
 void vision::CaptureThread::setExposure(int exp) {
     exposure = exp;
-#ifdef UNIX
+#ifdef YOCTO
+    cap.set_control(V4L2_CID_EXPOSURE_ABSOLUTE,exposure);
+#elif defined(UNIX)
     v4l2_set_control(v4l2_fd,V4L2_CID_EXPOSURE_ABSOLUTE,exposure);
 #else
     qDebug() << "Set exposure to: " << exposure << "not implemented on windows";

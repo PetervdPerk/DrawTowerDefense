@@ -78,6 +78,8 @@ virtual double get(int propId){
 		return (*this);
 	}
 
+    int set_control(int cid, int value);
+
 private:
 	int fd_;
 	int current_buffer_index_;

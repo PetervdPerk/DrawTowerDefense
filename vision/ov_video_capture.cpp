@@ -51,7 +51,7 @@ OvVideoCapture::~OvVideoCapture() {
 
 bool OvVideoCapture::open() {
     ipu_input_format_ = { mode_.width, mode_.height, 16, V4L2_PIX_FMT_UYVY }; //OV5640 default color format
-    ipu_output_format_ = { mode_.width, mode_.height, 24, V4L2_PIX_FMT_BGR24 }; //OpenCV color format
+    ipu_output_format_ = { mode_.width, mode_.height, 8, V4L2_PIX_FMT_GREY }; //OpenCV color format
 
 	ipu_csc_init(&ipu_csc_, &ipu_input_format_, &ipu_output_format_);
 
@@ -114,7 +114,7 @@ bool OvVideoCapture::retrieve(cv::Mat& image) {
 		return false;
 	}	
 
-	image.create(mode_.height, mode_.width, CV_8UC3);
+    image.create(mode_.height, mode_.width, CV_8U);
 	//to_gray(buffer_, image.data, frame_size_);
 	ipu_csc_convert(&ipu_csc_, buffer_, image.data);
 
@@ -247,6 +247,10 @@ bool OvVideoCapture::open_internal() {
 		return false;
 	}
 	return true;
+}
+
+int OvVideoCapture::set_control(int cid, int value){
+    v4l2_set_control(fd_,cid,value);
 }
 
 }
