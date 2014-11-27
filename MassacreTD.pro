@@ -113,3 +113,6 @@ HEADERS  += vision/ov_video_capture.h \
 
 win32:DEFINES  += WIN32
 unix:DEFINES     += UNIX
+
+target.path = /home/root/MassacreTD
+INSTALLS += target

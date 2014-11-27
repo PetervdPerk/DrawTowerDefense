@@ -4,6 +4,7 @@
 #include <QObject>
 #include <QSlider>
 #include <QHash>
+#include "../mainwindow.h"
 
 #include "vision/Buffer.h"
 #include "vision/capturethread.h"
@@ -20,7 +21,7 @@ class visionManager : public QObject
 {
     Q_OBJECT
 public:
-    explicit visionManager(QObject *parent = 0);
+    explicit visionManager(MainWindow *window, QObject *parent = 0);
     virtual ~visionManager();
     void enableView();
 
@@ -33,12 +34,13 @@ public slots:
     void setROI(QRect roi);
     void lineFound(QPolygonF);
     void glyphLocSlot(QPointF loc,int id);
+    void forceStartGame();
 
 private:
     vision::ImageBuffer* buffer;
     vision::CaptureThread* capture;
     vision::ProcessingThread* proc;
-    vision::visionView *view;
+    MainWindow *view;
     vision::task::glyphProcessTask *glyphTask;
 
     vision::task::lineprocesstask *lineTask;

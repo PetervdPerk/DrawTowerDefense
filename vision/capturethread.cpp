@@ -3,7 +3,7 @@
 vision::CaptureThread::CaptureThread(ImageBuffer *imgBuffer, int deviceNumber,
                                      bool dropFrameIfBufferFull, int width, int height) : QThread()
   #ifdef YOCTO
-  ,cap(jafp::OvVideoCapture::OV_MODE_640_480_30)
+  ,cap(jafp::OvVideoCapture::OV_MODE_640_480_15)
   #endif
 {
     // Save passed parameters
@@ -38,8 +38,12 @@ vision::CaptureThread::CaptureThread(ImageBuffer *imgBuffer, int deviceNumber,
     if (!cap.open()) {
         qDebug() << "OV5640 capture open failed";
     }
+
+    cap.set_control(V4L2_CID_EXPOSURE_ABSOLUTE,exposure);
+    cap.set_control(V4L2_CID_WHITE_BALANCE_TEMPERATURE,whiteBalance);
+
 #else
-    cap.open("mfw_v4lsrc ! ffmpegcolorspace ! video/x-raw-rgb ! appsink");
+    cap.open(0);
 #endif
 }
 

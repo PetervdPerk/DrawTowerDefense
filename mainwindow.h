@@ -18,6 +18,14 @@ public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
     void resizeEvent(QResizeEvent *);
+    void addLayoutToVBOX(QLayout *layout);
+    void addLayoutToVBOX2(QLayout *layout);
+
+public slots:
+    void updateFrame(const QImage &frame);
+
+private slots:
+    void on_tabWidget_currentChanged(int index);
 
 private:
     Ui::MainWindow *ui;

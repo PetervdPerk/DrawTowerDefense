@@ -5,6 +5,8 @@ game::game(View* gameView, QObject *parent) :
 {
     this->gameView = gameView;
     //TODO DRAW WELCOME screen
+
+
 }
 
 void game::startDraw(){
@@ -17,7 +19,6 @@ void game::drawLine(QPolygonF line){
         path.addPolygon(line.mid(0,line.length()/2));
 
         QGraphicsItem* graphicsLine = new GameLine(line); //Filled line
-        //QGraphicsItem* graphicsLine = new QGraphicsPathItem(path); //Path line
 
         gameView->addItem(graphicsLine);
 

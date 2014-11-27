@@ -5,6 +5,8 @@
 #include "vision/visionmanager.h"
 #include "vision/visionview.h"
 
+#include <QResizeEvent>
+
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
@@ -20,7 +22,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     //glyphDetector* detect = new glyphDetector(false);
 
-    vision::visionManager *mgr = new vision::visionManager();
+    vision::visionManager *mgr = new vision::visionManager(this);
 
     mgr->enableView();
 
@@ -38,4 +40,24 @@ MainWindow::~MainWindow()
 
 void MainWindow::resizeEvent(QResizeEvent *) {
     gameView->resizeHandler();
+}
+
+void MainWindow::updateFrame(const QImage &frame){
+    ui->view->setPixmap(QPixmap::fromImage(frame));
+}
+
+void MainWindow::addLayoutToVBOX(QLayout *layout){
+    ui->vbox->addLayout(layout);
+}
+
+void MainWindow::addLayoutToVBOX2(QLayout *layout){
+    ui->vbox2->addLayout(layout);
+}
+
+void MainWindow::on_tabWidget_currentChanged(int index)
+{
+    QSize tempSize=ui->graphicsView->size();
+    //ui->graphicsView->resizeEvent(new QResizeEvent(tempSize,tempSize));
+    //ui->tabGame->resizeEvent(new QResizeEvent(tempSize,tempSize));
+    QMainWindow::resizeEvent(new QResizeEvent(tempSize,tempSize));
 }

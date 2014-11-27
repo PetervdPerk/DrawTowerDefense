@@ -9,14 +9,14 @@ void vision::task::boundingRectTask::process(Mat image){
 
     image.copyTo(processedImage);
 
-#ifndef YOCTO
+
     cvtColor( processedImage, processedImage, CV_BGR2GRAY );
-#endif
+
 
     blur( processedImage, processedImage, Size(3,3) );
 
     /// Detect edges using Threshold
-    threshold( src_gray, threshold_output, thresh, 255, THRESH_BINARY );
+    threshold( processedImage, threshold_output, thresh, 255, THRESH_BINARY );
     /// Find contours
     findContours( threshold_output, contours, hierarchy, CV_RETR_TREE, CV_CHAIN_APPROX_SIMPLE, Point(0, 0) );
     // CV_RETR_EXTERNAL

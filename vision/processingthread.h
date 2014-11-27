@@ -34,6 +34,9 @@ public:
     void stop();
     void setProcessTask(vision::task::abstractProcessTask* task);
 
+public slots:
+    void setShowImage(bool show);
+
 private:
     void updateFPS(int);
     QImage MatToQImage(const Mat& mat);

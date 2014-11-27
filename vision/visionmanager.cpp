@@ -2,10 +2,13 @@
 #include <QThread>
 #include <QPushButton>
 #include <QHBoxLayout>
+#include <QCheckBox>
 #include <QLabel>
 
-vision::visionManager::visionManager(QObject *parent) : QObject(parent)
+vision::visionManager::visionManager(MainWindow *window, QObject *parent) : QObject(parent)
 {
+    this->view = window;
+
     buffer = new vision::ImageBuffer();
     buffer->add(0,new vision::Buffer<Mat>(64));
 
@@ -26,11 +29,11 @@ vision::visionManager::visionManager(QObject *parent) : QObject(parent)
 }
 
 void vision::visionManager::enableView(){
-    view = new vision::visionView();
+    //view = new vision::visionView();
 
     QObject::connect(proc, SIGNAL(newFrame(QImage)), view, SLOT(updateFrame(QImage)));
 
-    view->show();
+    //view->show();
 
     //Generate sliders for GUI
     QHBoxLayout *cthreshBox = new QHBoxLayout();
@@ -88,7 +91,7 @@ void vision::visionManager::enableView(){
     QLabel *exposureLabel = new QLabel("Exposure");
 
     QSlider *exposureSlider = new QSlider(Qt::Orientation::Horizontal);
-    exposureSlider->setMaximum(65535);
+    exposureSlider->setMaximum(255);
     exposureSlider->setMinimum(0);
 
     QLabel *exposureValue = new QLabel();
@@ -101,17 +104,41 @@ void vision::visionManager::enableView(){
 
     view->addLayoutToVBOX(exposureBox);
 
-    QHBoxLayout *btnBox = new QHBoxLayout();
+    QVBoxLayout *btnBox = new QVBoxLayout();
     QPushButton *btnCalibrate = new QPushButton("Calibrate");
     btnBox->addWidget(btnCalibrate);
 
-    view->addLayoutToVBOX(btnBox);
+    QPushButton *btnStart = new QPushButton("Force start game");
+    btnBox->addWidget(btnStart);
+
+    QCheckBox *imageBox = new QCheckBox("Show video");
+    imageBox->setChecked(true);
+    QObject::connect(imageBox, SIGNAL(clicked(bool)), proc, SLOT(setShowImage(bool)));
+    btnBox->addWidget(imageBox);
+
+    view->addLayoutToVBOX2(btnBox);
+
 
     QObject::connect(btnCalibrate, SIGNAL(clicked()), rectTask, SLOT(setOk()));
+    QObject::connect(btnStart, SIGNAL(clicked()), this, SLOT(forceStartGame()) );
     QObject::connect(threshSlider, SIGNAL(valueChanged(int)), rectTask, SLOT(setThreshold(int)) );
     QObject::connect(cthreshSlider, SIGNAL(valueChanged(int)), lineTask, SLOT(setThreshold(int)) );
     QObject::connect(whiteSlider, SIGNAL(valueChanged(int)), capture, SLOT(setWhiteBalance(int)) );
     QObject::connect(exposureSlider, SIGNAL(valueChanged(int)), capture, SLOT(setExposure(int)) );
+}
+
+void vision::visionManager::forceStartGame(){
+    QPainterPath path;
+    path.moveTo(000,100);
+    path.quadTo(100,600,400,400);
+    path.quadTo(100,750,750,480);
+    path.quadTo(200,50,300,0);
+    path.quadTo(200,50,300,0);
+    path.quadTo(100,750,750,480);
+    path.quadTo(100,600,400,400);
+    path.moveTo(000,100);
+
+    lineFound(path.toFillPolygon());
 }
 
 void vision::visionManager::lineFound(QPolygonF line){

@@ -10,9 +10,9 @@ void vision::task::lineprocesstask::process(Mat image){
     //image.copyTo(processedImage);
     processedImage = image(currentROI);
 
-#ifndef YOCTO
+
     cvtColor( processedImage, processedImage, CV_BGR2GRAY );
-#endif
+
     blur( processedImage, processedImage, Size(3,3) );
 
     /// Detect edges using Threshold

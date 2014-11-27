@@ -141,6 +141,12 @@ void vision::ProcessingThread::stop()
     doStop=true;
 }
 
+
+void vision::ProcessingThread::setShowImage(bool show){
+    QMutexLocker locker(&doStopMutex);
+    showImage = show;
+}
+
 void vision::ProcessingThread::setProcessTask(vision::task::abstractProcessTask* task)
 {
     QMutexLocker locker(&doStopMutex);
