@@ -3,10 +3,12 @@
 vision::task::abstractProcessTask::abstractProcessTask(QObject *parent) :
     QObject(parent)
 {
-    currentROI.x = 0;
-    currentROI.y = 0;
-    currentROI.width = 640;
-    currentROI.height = 480;
+    QRect roi;
+    roi.setX(0);
+    roi.setY(0);
+    roi.setWidth(640);
+    roi.setHeight(480);
+    setROI(roi);
 }
 
 Mat vision::task::abstractProcessTask::getProcessedImage(){
