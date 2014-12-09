@@ -13,6 +13,7 @@ vision::visionManager::visionManager(MainWindow *window, QObject *parent) : QObj
     buffer->add(0,new vision::Buffer<Mat>(64));
 
     glyphTask = new vision::task::glyphProcessTask(this);
+    markerTask = new vision::task::markerProcessTask(this);
     rectTask = new vision::task::boundingRectTask(this);
     lineTask = new vision::task::lineprocesstask(this);
 
@@ -23,6 +24,7 @@ vision::visionManager::visionManager(MainWindow *window, QObject *parent) : QObj
     proc->start();
 
     QObject::connect(glyphTask, SIGNAL(glyphLoc(QPointF,int)), this, SIGNAL(glyphLoc(QPointF,int)) ); //Pass glyphLoc through
+    QObject::connect(markerTask, SIGNAL(glyphLoc(QPointF,int)), this, SIGNAL(glyphLoc(QPointF,int)) ); //Pass glyphLoc through
     QObject::connect(glyphTask, SIGNAL(glyphLoc(QPointF,int)), this, SLOT(glyphLocSlot(QPointF,int)) );
     QObject::connect(lineTask, SIGNAL(lineDetected(QPolygonF)), this, SLOT(lineFound(QPolygonF)) );
     QObject::connect(rectTask, SIGNAL(roiRect(QRect)), this, SLOT(setROI(QRect)));
@@ -70,6 +72,45 @@ void vision::visionManager::enableView(){
 
     view->addLayoutToVBOX(threshBox);
 
+#ifdef YOCTO
+    QHBoxLayout *wbBox = new QHBoxLayout();
+    QLabel *redLabel = new QLabel("R");
+    QLabel *greenLabel = new QLabel("G");
+    QLabel *blueLabel = new QLabel("B");
+
+    QSlider *rSlider = new QSlider(Qt::Orientation::Horizontal);
+    rSlider->setMaximum(4096);
+    rSlider->setMinimum(0);
+
+    QSlider *gSlider = new QSlider(Qt::Orientation::Horizontal);
+    gSlider->setMaximum(4096);
+    gSlider->setMinimum(0);
+
+    QSlider *bSlider = new QSlider(Qt::Orientation::Horizontal);
+    bSlider->setMaximum(4096);
+    bSlider->setMinimum(0);
+
+    QLabel *rValue = new QLabel();
+    QLabel *gValue = new QLabel();
+    QLabel *bValue = new QLabel();
+    QObject::connect(rSlider, SIGNAL(valueChanged(int)), rValue, SLOT(setNum(int)) );
+    QObject::connect(gSlider, SIGNAL(valueChanged(int)), gValue, SLOT(setNum(int)) );
+    QObject::connect(bSlider, SIGNAL(valueChanged(int)), bValue, SLOT(setNum(int)) );
+
+    wbBox->addWidget(redLabel);
+    wbBox->addWidget(rSlider);
+    wbBox->addWidget(rValue);
+
+    wbBox->addWidget(greenLabel);
+    wbBox->addWidget(gSlider);
+    wbBox->addWidget(gValue);
+
+    wbBox->addWidget(blueLabel);
+    wbBox->addWidget(bSlider);
+    wbBox->addWidget(bValue);
+
+    view->addLayoutToVBOX(wbBox);
+#else
     QHBoxLayout *whiteBox = new QHBoxLayout();
     QLabel *whiteLabel = new QLabel("White balance");
 
@@ -86,6 +127,7 @@ void vision::visionManager::enableView(){
     whiteBox->addWidget(whiteValue);
 
     view->addLayoutToVBOX(whiteBox);
+#endif
 
     QHBoxLayout *exposureBox = new QHBoxLayout();
     QLabel *exposureLabel = new QLabel("Exposure");
@@ -103,6 +145,23 @@ void vision::visionManager::enableView(){
     exposureBox->addWidget(exposureValue);
 
     view->addLayoutToVBOX(exposureBox);
+
+    QHBoxLayout *gainBox = new QHBoxLayout();
+    QLabel *gainLabel = new QLabel("Gain");
+
+    QSlider *gainSlider = new QSlider(Qt::Orientation::Horizontal);
+    gainSlider->setMaximum(1024);
+    gainSlider->setMinimum(0);
+
+    QLabel *gainValue = new QLabel();
+    QObject::connect(gainSlider, SIGNAL(valueChanged(int)), gainValue, SLOT(setNum(int)) );
+    gainSlider->setValue(capture->getGain());
+
+    gainBox->addWidget(gainLabel);
+    gainBox->addWidget(gainSlider);
+    gainBox->addWidget(gainValue);
+
+    view->addLayoutToVBOX(gainBox);
 
     QVBoxLayout *btnBox = new QVBoxLayout();
     QPushButton *btnCalibrate = new QPushButton("Calibrate");
@@ -122,9 +181,17 @@ void vision::visionManager::enableView(){
     QObject::connect(btnCalibrate, SIGNAL(clicked()), rectTask, SLOT(setOk()));
     QObject::connect(btnStart, SIGNAL(clicked()), this, SLOT(forceStartGame()) );
     QObject::connect(threshSlider, SIGNAL(valueChanged(int)), rectTask, SLOT(setThreshold(int)) );
+    QObject::connect(threshSlider, SIGNAL(valueChanged(int)), markerTask, SLOT(setThreshold(int)) );
     QObject::connect(cthreshSlider, SIGNAL(valueChanged(int)), lineTask, SLOT(setThreshold(int)) );
+#ifdef YOCTO
+    QObject::connect(rSlider, SIGNAL(valueChanged(int)), capture, SLOT(setWB_R(int)) );
+    QObject::connect(gSlider, SIGNAL(valueChanged(int)), capture, SLOT(setWB_G(int)) );
+    QObject::connect(bSlider, SIGNAL(valueChanged(int)), capture, SLOT(setWB_B(int)) );
+#else
     QObject::connect(whiteSlider, SIGNAL(valueChanged(int)), capture, SLOT(setWhiteBalance(int)) );
+#endif
     QObject::connect(exposureSlider, SIGNAL(valueChanged(int)), capture, SLOT(setExposure(int)) );
+    QObject::connect(gainSlider, SIGNAL(valueChanged(int)), capture, SLOT(setGain(int)) );
 }
 
 void vision::visionManager::forceStartGame(){
@@ -144,6 +211,7 @@ void vision::visionManager::forceStartGame(){
 void vision::visionManager::lineFound(QPolygonF line){
     QObject::disconnect(glyphTask, SIGNAL(glyphLoc(QPointF,int)), this, SLOT(glyphLocSlot(QPointF,int)) );
     proc->setProcessTask(glyphTask);
+    //proc->setProcessTask(markerTask);
     emit lineDetected(line);
 }
 

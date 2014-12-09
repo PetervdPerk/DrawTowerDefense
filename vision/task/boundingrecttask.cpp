@@ -58,7 +58,7 @@ void vision::task::boundingRectTask::process(Mat image){
 
     //if(biggestRect > 190000){
     if(ok) {
-        if(biggestRect > 190000) {
+        if(biggestRect > 100000) {
             qDebug() << "Biggest rect " << biggestRect;
             QRect roi(boundRect[biggestRectId].tl().x,
                       boundRect[biggestRectId].tl().y,

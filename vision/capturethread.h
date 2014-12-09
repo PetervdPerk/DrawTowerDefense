@@ -42,10 +42,15 @@ public:
     int getCameraHeight();
     int getWhiteBalance();
     int getExposure();
+    int getGain();
 
 public slots:
     void setWhiteBalance(int wb);
     void setExposure(int exp);
+    void setGain(int g);
+    void setWB_R(int r);
+    void setWB_G(int g);
+    void setWB_B(int b);
 
 
 protected:
@@ -73,8 +78,20 @@ private:
     int height;
     int AverageFps;
 
+#ifdef YOCTO
+    int whiteBalance = 21845;
+    int exposure = 68;
+    int r = 1518;
+    int g = 1479;
+    int b = 2201;
+
+#else
     int whiteBalance = 21845;
     int exposure = 4169;
+    int r,g,b = 0;
+#endif
+
+    int gain = 15;
 
 #ifdef UNIX
     int v4l2_fd;

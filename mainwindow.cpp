@@ -39,7 +39,9 @@ MainWindow::~MainWindow()
 }
 
 void MainWindow::resizeEvent(QResizeEvent *) {
+#ifndef YOCTO
     gameView->resizeHandler();
+#endif
 }
 
 void MainWindow::updateFrame(const QImage &frame){

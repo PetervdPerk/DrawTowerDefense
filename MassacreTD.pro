@@ -42,7 +42,8 @@ SOURCES += main.cpp\
     vision/task/boundingrecttask.cpp \
     vision/task/lineprocesstask.cpp \
     gameline.cpp \
-    test.c
+    test.c \
+    vision/task/markerprocesstask.cpp
 
 HEADERS  += mainwindow.h \
     view.h \
@@ -72,7 +73,8 @@ HEADERS  += mainwindow.h \
     vision/task/glyphprocesstask.h \
     vision/task/boundingrecttask.h \
     vision/task/lineprocesstask.h \
-    gameline.h
+    gameline.h \
+    vision/task/markerprocesstask.h
 
 FORMS    += mainwindow.ui \
     vision/visionview.ui
@@ -116,3 +118,6 @@ unix:DEFINES     += UNIX
 
 target.path = /home/root/MassacreTD
 INSTALLS += target
+
+OTHER_FILES += \
+    vision/shaders/harris.fsh

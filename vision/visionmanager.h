@@ -14,6 +14,7 @@
 #include "vision/task/glyphprocesstask.h"
 #include "vision/task/boundingrecttask.h"
 #include "vision/task/lineprocesstask.h"
+#include "vision/task/markerprocesstask.h"
 
 namespace vision
 {
@@ -42,6 +43,7 @@ private:
     vision::ProcessingThread* proc;
     MainWindow *view;
     vision::task::glyphProcessTask *glyphTask;
+    vision::task::markerProcessTask *markerTask;
 
     vision::task::lineprocesstask *lineTask;
     vision::task::boundingRectTask *rectTask;

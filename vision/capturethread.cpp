@@ -39,8 +39,12 @@ vision::CaptureThread::CaptureThread(ImageBuffer *imgBuffer, int deviceNumber,
         qDebug() << "OV5640 capture open failed";
     }
 
-    cap.set_control(V4L2_CID_EXPOSURE_ABSOLUTE,exposure);
-    cap.set_control(V4L2_CID_WHITE_BALANCE_TEMPERATURE,whiteBalance);
+    setExposure(exposure);
+    setGain(gain);
+    setWB_R(r);
+    setWB_G(g);
+    setWB_B(b);
+
 
 #else
     cap.open(0);
@@ -54,6 +58,10 @@ int vision::CaptureThread::getWhiteBalance() {
 
 int vision::CaptureThread::getExposure() {
     return exposure;
+}
+
+int vision::CaptureThread::getGain() {
+    return gain;
 }
 
 void vision::CaptureThread::setWhiteBalance(int wb) {
@@ -78,6 +86,37 @@ void vision::CaptureThread::setExposure(int exp) {
 #endif
 }
 
+void vision::CaptureThread::setGain(int g) {
+    gain = g;
+#ifdef YOCTO
+    cap.set_control(V4L2_CID_GAIN,gain);
+#elif defined(UNIX)
+    v4l2_set_control(v4l2_fd,V4L2_CID_GAIN,gain);
+#else
+    qDebug() << "Set exposure to: " << exposure << "not implemented on windows";
+#endif
+}
+
+void vision::CaptureThread::setWB_R(int r){
+    this->r = r;
+#ifdef YOCTO
+    cap.set_control(V4L2_CID_RED_BALANCE,r);
+#endif
+}
+
+void vision::CaptureThread::setWB_G(int g){
+    this->g = g;
+#ifdef YOCTO
+    cap.set_control(V4L2_CID_WHITE_BALANCE_TEMPERATURE,g);
+#endif
+}
+
+void vision::CaptureThread::setWB_B(int b){
+    this->b = b;
+#ifdef YOCTO
+    cap.set_control(V4L2_CID_BLUE_BALANCE,b);
+#endif
+}
 
 void vision::CaptureThread::run()
 {
