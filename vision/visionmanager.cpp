@@ -133,7 +133,11 @@ void vision::visionManager::enableView(){
     QLabel *exposureLabel = new QLabel("Exposure");
 
     QSlider *exposureSlider = new QSlider(Qt::Orientation::Horizontal);
+#ifdef YOCTO
     exposureSlider->setMaximum(255);
+#else
+    exposureSlider->setMaximum(65535);
+#endif
     exposureSlider->setMinimum(0);
 
     QLabel *exposureValue = new QLabel();
@@ -170,6 +174,9 @@ void vision::visionManager::enableView(){
     QPushButton *btnStart = new QPushButton("Force start game");
     btnBox->addWidget(btnStart);
 
+    QPushButton *btnSwitch = new QPushButton("Switch detection method");
+    btnBox->addWidget(btnSwitch);
+
     QCheckBox *imageBox = new QCheckBox("Show video");
     imageBox->setChecked(true);
     QObject::connect(imageBox, SIGNAL(clicked(bool)), proc, SLOT(setShowImage(bool)));
@@ -180,6 +187,7 @@ void vision::visionManager::enableView(){
 
     QObject::connect(btnCalibrate, SIGNAL(clicked()), rectTask, SLOT(setOk()));
     QObject::connect(btnStart, SIGNAL(clicked()), this, SLOT(forceStartGame()) );
+    QObject::connect(btnSwitch, SIGNAL(clicked()), this, SLOT(switchDetectMethod()) );
     QObject::connect(threshSlider, SIGNAL(valueChanged(int)), rectTask, SLOT(setThreshold(int)) );
     QObject::connect(threshSlider, SIGNAL(valueChanged(int)), markerTask, SLOT(setThreshold(int)) );
     QObject::connect(cthreshSlider, SIGNAL(valueChanged(int)), lineTask, SLOT(setThreshold(int)) );
@@ -206,6 +214,14 @@ void vision::visionManager::forceStartGame(){
     path.moveTo(000,100);
 
     lineFound(path.toFillPolygon());
+}
+
+void vision::visionManager::switchDetectMethod(){
+    if(proc->getProcessTask() == glyphTask){
+        proc->setProcessTask(markerTask);
+    } else {
+        proc->setProcessTask(glyphTask);
+    }
 }
 
 void vision::visionManager::lineFound(QPolygonF line){

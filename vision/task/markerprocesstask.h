@@ -3,7 +3,11 @@
 
 #include "abstractprocesstask.h"
 #include "opencv2/opencv.hpp"
+#include <aruco/cvdrawingutils.h>
 using namespace cv;
+
+
+#include "operators.h"
 
 namespace vision
 {
@@ -27,10 +31,14 @@ signals:
 public slots:
 
 private:
+    void setProcessedImage(image_t *img);
+
     Mat processedImage, drawing;
     int thresh = 85;
     vector<vector<Point> > contours;
     vector<Vec4i> hierarchy;
+
+    image_t pView;
 
 signals:
     void glyphLoc(QPointF,int);

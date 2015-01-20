@@ -36,6 +36,7 @@ public slots:
     void lineFound(QPolygonF);
     void glyphLocSlot(QPointF loc,int id);
     void forceStartGame();
+    void switchDetectMethod();
 
 private:
     vision::ImageBuffer* buffer;

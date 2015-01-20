@@ -33,6 +33,9 @@ public:
     QRect getCurrentROI();
     void stop();
     void setProcessTask(vision::task::abstractProcessTask* task);
+    vision::task::abstractProcessTask* getProcessTask(){
+        return this->processTask;
+    }
 
 public slots:
     void setShowImage(bool show);

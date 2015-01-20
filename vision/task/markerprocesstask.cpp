@@ -10,71 +10,206 @@ vision::task::markerProcessTask::markerProcessTask(QObject *parent) :
 
 
 void vision::task::markerProcessTask::process(Mat image){
-    processedImage = image(currentROI);
+    /*processedImage = image(currentROI);
 
     cvtColor( processedImage, processedImage, CV_BGR2GRAY );
 
     blur( processedImage, processedImage, Size(3,3) );
 
-    /// Detect edges using Threshold
-    threshold( processedImage, processedImage, thresh, 255, THRESH_BINARY );
-    /// Find contours
-    Mat contourImage;
-    processedImage.copyTo(contourImage);
-    findContours( contourImage, contours, hierarchy, CV_RETR_LIST, CV_CHAIN_APPROX_NONE );
+    image.convertTo();*/
 
-    RNG rng(12345);
+    QString info = "";
 
-    vector<vector<Point> > contours_poly;
-    vector<Point2f> boundRect( contours.size() );
-    vector<Point>  approxCurve;
+    cvtColor( image, image, CV_BGR2GRAY );
 
-    for( int i = 0; i < contours.size(); i++ )
-    {
-        approxPolyDP( contours[i],approxCurve , double ( contours[i].size() ) *0.05 , true );
 
-        if( approxCurve.size() == 4) //If polygon has 4 points
-        {
-            if ( isContourConvex ( Mat ( approxCurve ) ) ){
-                qDebug() << "Found candidate";
-                vector<Point> marker;
-                for ( int j=0;j<4;j++ )
-                {
-                    marker.push_back(Point ( approxCurve[j].x,approxCurve[j].y ) );
-                }
-                contours_poly.push_back(marker);
-                //boundRect.push_back(Point2f ( approxCurve[j].x,approxCurve[j].y ) );
-            }
+    image_t pSrc;
+    image_t pDst;
+
+    pSrc.width = image.cols;
+    pSrc.height = image.rows;
+    pDst.width = image.cols;
+    pDst.height = image.rows;
+
+    //data copy using memcpy function
+    memcpy(&pSrc.data[0][0], image.data, sizeof(unsigned char)*pSrc.width*pSrc.height);
+
+    // Contrast stretch the source image, result in destination image
+    vThresholdIsoData(&pSrc,&pDst,DARK);
+
+    vRemoveBorderBlobs(&pDst,&pDst,FOUR);
+
+    //vFillHoles(&pDst,&pDst,FOUR);
+
+    int blobcount = iLabelBlobs(&pDst,&pDst,FOUR);
+
+
+    blobinfo_t blobinfo[128];
+    vBlobAnalyse(&pDst,blobcount,blobinfo);
+    int b = 0;
+    for(int i = 0; i < blobcount; i++){
+        if(blobinfo[i].nof_pixels > 100 && blobinfo[i].width > 15 && blobinfo[i].height > 15){
+            vSetSelectedToValue(&pDst,&pDst,i+1,b+1);
+            blobinfo[b] = blobinfo[i];
+            b++;
+        } else {
+            vSetSelectedToValue(&pDst,&pDst,i+1,0);
+        }
+    }
+    blobcount = b;
+    vSetRangeToValue(&pDst,&pDst,b,255,0);
+
+    /*
+
+    //Method 1
+    int corner_count;
+    xy *corners = fast9_detect(&pDst.data[0][0],pDst.width,pDst.height,pDst.width,0,&corner_count);
+    info.append(QString("6. Corners %1\n").arg(corner_count));
+
+    int label_corners = vMarkCorners(&pDst,&pDst,corners,corner_count,blobinfo,b);
+    info.append(QString("7. Marked corners %1\n").arg(label_corners));
+
+    setProcessedImage(&pDst);
+    vSetSelectedToValue(&pView,&pView,0,255);
+    vSetSelectedToValue(&pView,&pView,1,128);
+    vSetSelectedToValue(&pView,&pView,2,128);
+
+    xy centroids[blobcount];
+    xy_info corner_loc[label_corners];
+    vDetermMinMaxXY(&pDst,&corner_loc[0],label_corners);
+
+    for(int b = 0 ; b < blobcount; b++){
+        if(blobinfo[b].nof_corners == 4){
+            vCentroid(&pDst,b+1,&centroids[b].x,&centroids[b].y);
         }
     }
 
-    cvtColor( processedImage, processedImage, CV_GRAY2BGR );
-/*
-    QGLShader shader(QGLShader::Fragment);
-    shader.compileSourceCode(code);
+    qDebug() << blobcount;
+    for(int b = 0 ; b < blobcount; b++){
+        if(blobinfo[b].nof_corners == 4){
+            xy quad[4];
+            for(int n = 0 ; n < 4; n++){
+                if(corner_loc[blobinfo[b].corners[n]-1].min_x < centroids[b].x && corner_loc[blobinfo[b].corners[n]-1].min_y < centroids[b].y){
+                    quad[0].x = corner_loc[blobinfo[b].corners[n]-1].min_x;
+                    quad[0].y = corner_loc[blobinfo[b].corners[n]-1].min_y;
+                } else if(corner_loc[blobinfo[b].corners[n]-1].max_x > centroids[b].x && corner_loc[blobinfo[b].corners[n]-1].min_y < centroids[b].y){
+                    quad[1].x = corner_loc[blobinfo[b].corners[n]-1].max_x;
+                    quad[1].y = corner_loc[blobinfo[b].corners[n]-1].min_y;
+                } else if(corner_loc[blobinfo[b].corners[n]-1].max_x > centroids[b].x && corner_loc[blobinfo[b].corners[n]-1].max_y > centroids[b].y){
+                    quad[2].x = corner_loc[blobinfo[b].corners[n]-1].max_x;
+                    quad[2].y = corner_loc[blobinfo[b].corners[n]-1].max_y;
+                } else if(corner_loc[blobinfo[b].corners[n]-1].min_x < centroids[b].x && corner_loc[blobinfo[b].corners[n]-1].max_y > centroids[b].y){
+                    quad[3].x = corner_loc[blobinfo[b].corners[n]-1].min_x;
+                    quad[3].y = corner_loc[blobinfo[b].corners[n]-1].max_y;
+                }
+            }
 
-    QGLShaderProgram program(context);
-    program.addShader(shader);
-    program.link();
+            vPerspectiveTransform(&pSrc,&pDst,70,quad);
+            //setProcessedImage(&pDst);
 
-    program.bind();*/
+            int mId = vGetMarkerId(&pDst);
 
-    drawing = Mat::zeros( processedImage.size(), CV_8UC3 );
-    for( int i = 0; i< contours_poly.size(); i++ )
-    {
-        //Scalar color = Scalar( rng.uniform(0, 255), rng.uniform(0,255), rng.uniform(0,255) );
-        Scalar color = Scalar( 255,255,255 );
-        drawContours( drawing, contours_poly, i, color, 1, 8, vector<Vec4i>(), 0, Point() );
-      /*  vector<Point> tmp = contours_poly.at(i);
-        const Point* element[1] = { &tmp[0]};
-        int nr = (int)tmp.size();
-            fillPoly(drawing,element, &nr, 1, color);*/
+            qDebug() << b << " Marker " << mId;
 
-        //Scalar color2 = Scalar( 128, 40, 80);
-        //rectangle( processedImage, boundRect[i].tl(), boundRect[i].br(), color2, 2, 8, 0 );
-        //circle( drawing, center[i], (int)radius[i], color, 2, 8, 0 );
+            if(mId > 0){
+                QPointF loc;
+                loc.setX(centroids[b].x);
+                loc.setY(centroids[b].y);
+                emit glyphLoc(loc,mId);
+            }
+
+            info.append(QString("8. Marker \n 1. %1,%2\n 2. %3,%4\n 3. %5,%6\n 4. %7,%8\n").
+                        arg(quad[0].x).arg(quad[0].y).arg(quad[1].x).arg(quad[1].y).arg(quad[2].x).arg(quad[2].y).arg(quad[3].x).arg(quad[3].y));
+            info.append(QString("8. Marker centroid %1,%2\n").arg(centroids[b].x).arg(centroids[b].y));
+
+
+        } else {
+            qDebug() << "Not enough " << blobinfo[b].nof_corners;
+        }
     }
+*/
+    //Method 2
+    qDebug() << "Blobcount " << blobcount;
+    xy_info blobpoints[blobcount][4];
+    xy centroids[blobcount];
+
+    for(int b = 0 ; b < blobcount; b++){
+        vBlobBoundingCornerDetect(&pDst,&blobpoints[b][0],b+1,&blobinfo[b]);
+        if(blobinfo[b].nof_corners == 4){
+            vCentroid(&pDst,b+1,&centroids[b].x,&centroids[b].y);
+        }
+    }
+
+    setProcessedImage(&pSrc);
+    vSetSelectedToValue(&pView,&pView,0,255);
+    vSetSelectedToValue(&pView,&pView,1,128);
+    vSetSelectedToValue(&pView,&pView,2,128);
+
+    for(int b = 0 ; b < blobcount; b++){
+        if(blobinfo[b].nof_corners == 4){
+            xy quad[4];
+            for(int n = 0 ; n < 4; n++){
+                if(blobpoints[b][n].min_x < centroids[b].x && blobpoints[b][n].min_y < centroids[b].y){
+                    quad[0].x = blobpoints[b][n].min_x;
+                    quad[0].y = blobpoints[b][n].min_y;
+                } else if(blobpoints[b][n].max_x > centroids[b].x && blobpoints[b][n].min_y < centroids[b].y){
+                    quad[1].x = blobpoints[b][n].max_x;
+                    quad[1].y = blobpoints[b][n].min_y;
+                } else if(blobpoints[b][n].max_x > centroids[b].x && blobpoints[b][n].max_y > centroids[b].y){
+                    quad[2].x = blobpoints[b][n].max_x;
+                    quad[2].y = blobpoints[b][n].max_y;
+                } else if(blobpoints[b][n].min_x < centroids[b].x && blobpoints[b][n].max_y > centroids[b].y){
+                    quad[3].x = blobpoints[b][n].min_x;
+                    quad[3].y = blobpoints[b][n].max_y;
+                }
+            }
+
+            vPerspectiveTransform(&pSrc,&pDst,70,quad);
+            setProcessedImage(&pDst);
+
+            int mId = vGetMarkerId(&pDst);
+
+            qDebug() << b << " Marker " << mId;
+
+            if(mId > 0){
+                QPointF loc;
+                loc.setX(centroids[b].x);
+                loc.setY(centroids[b].y);
+                emit glyphLoc(loc,mId);
+            }
+
+            std::vector<cv::Point2f> points;
+            points.push_back(
+                        cv::Point2f(quad[0].x,quad[0].y));
+            points.push_back(
+                        cv::Point2f(quad[1].x,quad[1].y));
+            points.push_back(
+                        cv::Point2f(quad[2].x,quad[2].y));
+            points.push_back(
+                        cv::Point2f(quad[3].x,quad[3].y));
+            aruco::Marker marker(points,mId);
+            marker.draw(processedImage,Scalar(0,0,255),1);
+
+            info.append(QString("8. Marker \n 1. %1,%2\n 2. %3,%4\n 3. %5,%6\n 4. %7,%8\n").
+                        arg(quad[0].x).arg(quad[0].y).arg(quad[1].x).arg(quad[1].y).arg(quad[2].x).arg(quad[2].y).arg(quad[3].x).arg(quad[3].y));
+            info.append(QString("8. Marker centroid %1,%2\n").arg(centroids[b].x).arg(centroids[b].y));
+
+
+        } else {
+            qDebug() << "Not enough " << blobinfo[b].nof_corners;
+        }
+    }
+    /*
+    */
 }
+
+void vision::task::markerProcessTask::setProcessedImage(image_t *img){
+    vCopy(img,&pView);
+    pView.height = img->height;
+    pView.width = img->width;
+    processedImage = Mat(pView.height, pView.width, CV_8UC1, &pView.data[0][0]);
+}
+
 
 Mat vision::task::markerProcessTask::getProcessedImage(){
     return processedImage;

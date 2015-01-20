@@ -42,7 +42,7 @@ SOURCES += main.cpp\
     vision/task/boundingrecttask.cpp \
     vision/task/lineprocesstask.cpp \
     gameline.cpp \
-    test.c \
+    vision/task/operators.cpp \
     vision/task/markerprocesstask.cpp
 
 HEADERS  += mainwindow.h \
@@ -74,6 +74,7 @@ HEADERS  += mainwindow.h \
     vision/task/boundingrecttask.h \
     vision/task/lineprocesstask.h \
     gameline.h \
+    vision/task/operators.h \
     vision/task/markerprocesstask.h
 
 FORMS    += mainwindow.ui \
