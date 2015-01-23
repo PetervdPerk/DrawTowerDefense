@@ -39,6 +39,16 @@ private:
     vector<Vec4i> hierarchy;
 
     image_t pView;
+    image_t pSrc;
+    image_t pDst;
+
+    int mId;
+    int blobcount;
+
+    blobinfo_t blobinfo[256];
+
+    Mat processedRoi;
+    Mat emptyImage;
 
 signals:
     void glyphLoc(QPointF,int);

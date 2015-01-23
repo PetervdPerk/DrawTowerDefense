@@ -19,6 +19,6 @@ void GameLine::paint(QPainter *painter,
     painter->drawPolygon(polygon().intersected(rect), fillRule());
     // draw polygon outline
     painter->setPen(pen());
-    painter->setBrush(QBrush(QColor("Black")));
+    painter->setBrush(QBrush(QColor("White")));
     painter->drawPolygon(polygon(), fillRule());
 }

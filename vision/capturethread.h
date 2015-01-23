@@ -80,18 +80,15 @@ private:
 
 #ifdef YOCTO
     int whiteBalance = 21845;
-    int exposure = 68;
-    int r = 1518;
-    int g = 1479;
-    int b = 2201;
-
+    int exposure = 26;
+    int r = 3122,g = 1479,b = 2864;
 #else
     int whiteBalance = 21845;
     int exposure = 4169;
     int r,g,b = 0;
 #endif
 
-    int gain = 15;
+    int gain = 10;
 
 #ifdef UNIX
     int v4l2_fd;

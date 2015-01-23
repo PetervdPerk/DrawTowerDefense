@@ -15,7 +15,7 @@ void game::startDraw(){
 
 void game::drawLine(QPolygonF line){
     if(paintOnce){
-        gameView->setBackground(QColor("White"));
+        gameView->setBackground(QColor("Black"));
         path.addPolygon(line.mid(0,line.length()/2));
 
         QGraphicsItem* graphicsLine = new GameLine(line); //Filled line

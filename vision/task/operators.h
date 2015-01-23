@@ -26,15 +26,17 @@
 // ----------------------------------------------------------------------------
 #ifdef QDEBUG_ENABLE
 
-  #include <QDebug>
-  #define QDEBUG(x) qDebug()<<x
+#include <QDebug>
+#define QDEBUG(x) qDebug()<<x
 
-  // Example usage:
-  // QDEBUG("Debug " << parameter << " value");
+// Example usage:
+// QDEBUG("Debug " << parameter << " value");
 
 #else
 
-  #define QDEBUG(x) //x
+#define QDEBUG(x) //x
+
+#define MAXBLOBS 190
 
 #endif
 
@@ -63,56 +65,72 @@ typedef uint8_t byte;
 
 typedef struct
 {
-  uint16_t width;
-  uint16_t height;
-  uint16_t lut;
-  uint16_t dummy; // Make sure the size of this struct is a power of 32 (DMA)
-  uint8_t  data[IMG_HEIGHT][IMG_WIDTH];
+    uint16_t x_offset;
+    uint16_t y_offset;
+    uint16_t width;
+    uint16_t height;
+    uint16_t lut;
+    uint16_t dummy; // Make sure the size of this struct is a power of 32 (DMA)
+    uint8_t  data[IMG_HEIGHT][IMG_WIDTH];
 }image_t;
 
 typedef enum
 {
-  BRIGHT = 0,
-  DARK
+    BRIGHT = 0,
+    DARK
 }eBrightness;
+
+
 
 typedef enum
 {
-  FOUR  = 4,
-  EIGHT = 8
+    AND = 0,
+    OR = 1
+}eOperator;
+
+typedef enum
+{
+    EQUAL = 0,
+    HIGHER = 1
+}eMethod;
+
+typedef enum
+{
+    FOUR  = 4,
+    EIGHT = 8
 }eConnected;
 
 typedef enum
 {
-  AVERAGE = 0,
-  HARMONIC,
-  MAX,
-  MEDIAN,
-  MIDPOINT,
-  MIN,
-  RANGE
+    AVERAGE = 0,
+    HARMONIC,
+    MAX,
+    MEDIAN,
+    MIDPOINT,
+    MIN,
+    RANGE
 }eFilterOperation;
 
 typedef struct blobinfo_t
 {
-  uint16_t height;
-  uint16_t width;
-  uint16_t nof_pixels;
-  float    perimeter;
-  uint8_t  corners[4];
-  uint8_t  nof_corners;
-  uint16_t  min_x;
-  uint16_t  max_x;
-  uint16_t  min_y;
-  uint16_t  max_y;
+    uint16_t height;
+    uint16_t width;
+    uint16_t nof_pixels;
+    float    perimeter;
+    uint8_t  corners[4];
+    uint8_t  nof_corners;
+    uint16_t  min_x;
+    uint16_t  max_x;
+    uint16_t  min_y;
+    uint16_t  max_y;
 }blobinfo_t;
 
 typedef struct xy_info
 {
-  uint16_t  min_x;
-  uint16_t  max_x;
-  uint16_t  min_y;
-  uint16_t  max_y;
+    uint16_t  min_x;
+    uint16_t  max_x;
+    uint16_t  min_y;
+    uint16_t  max_y;
 }xy_info;
 
 typedef struct { uint16_t x, y; } xy;
@@ -136,7 +154,7 @@ void vPerspectiveTransform(image_t *src,image_t *dst,
 void vRotateDegrees(image_t *src, image_t *dst, double rotation, int x_move, int y_move);
 
 void vInverseWarp(image_t *src, image_t *dst, uint8_t sx, uint8_t sy, uint8_t ex, uint8_t ey,
-           int *Wx, int *Wy);
+                  int *Wx, int *Wy);
 
 void vWarp(image_t *src, image_t *dst, uint8_t sx, uint8_t sy, uint8_t ex, uint8_t ey,
            int *Wx, int *Wy);
@@ -174,6 +192,8 @@ void vContrastStretchFast(image_t *src,  // must be a greyscale image
 // All pixel values are set to 0
 void vErase(image_t *img);
 
+void vApplyROI(image_t *img, uint32_t x_offset, uint32_t y_offset, uint32_t width, uint32_t height);
+
 // Src and dst image are the same
 void vCopy(image_t *src,
            image_t *dst);
@@ -187,7 +207,7 @@ void vAdd(image_t *src,
 // Result in dst image
 void vInvert(image_t *src, // must be a binary image
              image_t *dst);
-             
+
 // Src and dst image are multiplied pixel by pixel
 // Result in dst image
 void vMultiply(image_t *src,
@@ -201,10 +221,10 @@ void vSetSelectedToValue(image_t *src,
                          uint8_t value);
 
 void vSetRangeToValue(image_t *src,
-                         image_t *dst,
-                         uint8_t low,
-                         uint8_t high,
-                         uint8_t value);
+                      image_t *dst,
+                      uint8_t low,
+                      uint8_t high,
+                      uint8_t value);
 
 // Src image is copied to dst image
 // All border pixels of dst image are set to 'value'
@@ -262,12 +282,21 @@ void vNonlinearFilter(image_t *src,
                       image_t *dst,
                       eFilterOperation fo,
                       uint8_t n); // n equals the mask size
-                                  // n should be an odd number
+// n should be an odd number
 
 // Label all blobs, returns the number of labeled blobs
 uint32_t iLabelBlobs(image_t *src, // must be a binary image
                      image_t *dst,
                      eConnected connected);
+
+uint32_t iLabelBlobsMethod2(image_t *src, // must be a binary image
+                            image_t *dst,
+                            eConnected connected);
+
+uint32_t iLabelBlobsMethod3(image_t *src, // must be a binary image
+                            image_t *dst,
+                            eConnected connected);
+
 
 // Analyse blobs
 // pBlobInfo points to a blobinfo_t struct declared by the calling program
@@ -296,11 +325,11 @@ void vLDF(image_t *src, // must be a binary image
           image_t *dst);
 
 void iFillBlob(image_t *img,
-                  uint16_t x,
-                  uint16_t y,
-                  uint8_t value,
-                  uint8_t fill,
-                  eConnected connected);
+               uint16_t x,
+               uint16_t y,
+               uint8_t value,
+               uint8_t fill,
+               eConnected connected);
 
 // This function checks the number of pixels around pixel (x,y) and returns the
 // number of pixels that equal value.
@@ -317,10 +346,10 @@ uint8_t iNeighboursEqualOrHigher(image_t *img,
                                  eConnected connected);
 
 uint8_t iNeighboursEqualOrLower(image_t *img,
-                                 uint16_t x,
-                                 uint16_t y,
-                                 uint8_t value,
-                                 eConnected connected);
+                                uint16_t x,
+                                uint16_t y,
+                                uint8_t value,
+                                eConnected connected);
 
 #endif // _OPERATORS_H_
 // ----------------------------------------------------------------------------

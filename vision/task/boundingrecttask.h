@@ -25,6 +25,7 @@ signals:
 
 public slots:
     void setOk();
+    void setOkManual();
     void setThreshold(int val) {
         qDebug() << val;
         thresh = val;
@@ -42,6 +43,8 @@ private:
     bool toggle = false;
 
     bool ok = false;
+
+    bool manual = false;
 
 
 public slots:

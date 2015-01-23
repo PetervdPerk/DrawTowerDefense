@@ -6,12 +6,19 @@ gameUI::gameUI(View* gameView,game* game_obj,QObject *parent) :
 {
     this->gameView = gameView;
     this->game_obj = game_obj;
+
+    waveText.setDefaultTextColor(Qt::white);
+    lifeText.setDefaultTextColor(Qt::white);
+    moneyText.setDefaultTextColor(Qt::white);
+    waveTimerText.setDefaultTextColor(Qt::white);
     //TODO show status of time before next wave
+
 
     update(UIupdate::all);
 
-    moneyText.setPos(0,20);
-    lifeText.setPos(0,40);
+    waveText.setPos(20,0);
+    moneyText.setPos(20,20);
+    lifeText.setPos(20,40);
  //   waveTimerText.setPos(0,60);
 
     gameView->addItem(&waveText);

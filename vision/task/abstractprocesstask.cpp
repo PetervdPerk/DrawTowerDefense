@@ -1,4 +1,5 @@
 #include "abstractprocesstask.h"
+#include <QDebug>
 
 vision::task::abstractProcessTask::abstractProcessTask(QObject *parent) :
     QObject(parent)
@@ -18,10 +19,11 @@ Mat vision::task::abstractProcessTask::getProcessedImage(){
 
 void vision::task::abstractProcessTask::setROI(QRect roi)
 {
+    qDebug() << "Set ROI";
     currentROI.x = roi.x();
     currentROI.y = roi.y();
     currentROI.width = roi.width();
     currentROI.height = roi.height();
     widthFactor = (float)(800.00 / currentROI.width);
-    heightFactor = (float)(600.00 / currentROI.height);
+    heightFactor = (float)(560.00 / currentROI.height);
 }

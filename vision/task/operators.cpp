@@ -23,6 +23,8 @@
 #include <stdlib.h>
 #include <QDebug>
 
+uint32_t rCount;
+
 //Options
 
 
@@ -130,13 +132,13 @@ void vRotate180(image_t *img)
     register uint32_t t;
 
 
-#ifndef __arm__
+    //#ifndef __arm__
 #ifdef __win32__
 #define __REV(x)    (__bswap_32(x))
 #else
 #define __REV(x) (0 | ((x & 0x000000ff) << 24) | ((x & 0x0000ff00) << 8) | ((x & 0x00ff0000) >> 8) | ((x & 0xff000000) >> 24))
 #endif
-#endif
+    //#endif
 
     while(words--){
         t = __REV(*img_data);
@@ -163,6 +165,36 @@ void vErase(image_t *img)
     while(words--){
         *img_data++ = black;
     }
+}
+
+
+void vApplyROI(image_t *img, uint32_t x_offset, uint32_t y_offset, uint32_t width, uint32_t height){
+    register uint32_t x,y;
+
+    for(y=0; y < y_offset; y++){
+        for(x=0; x < img->width; x++){
+            img->data[y][x] = 0xFF;
+        }
+    }
+
+    for(y=y_offset+height; y < img->height; y++){
+        for(x=0; x < img->width; x++){
+            img->data[y][x] = 0xFF;
+        }
+    }
+
+    for(y=y_offset; y < y_offset+height; y++){
+        for(x=0; x < x_offset; x++){
+            img->data[y][x] = 0xFF;
+        }
+    }
+
+    for(y=y_offset; y < y_offset+height; y++){
+        for(x=x_offset+width; x < img->width; x++){
+            img->data[y][x] = 0xFF;
+        }
+    }
+
 }
 
 // ----------------------------------------------------------------------------
@@ -525,6 +557,7 @@ void vThresholdOtsu(image_t *src, image_t *dst, eBrightness brightness)
 
 // ----------------------------------------------------------------------------
 void vFillHoles(image_t *src, // must be a binary image
+
                 image_t *dst,
                 eConnected connected) // FOUR | EIGHT
 {
@@ -4098,11 +4131,424 @@ void vNonlinearFilter(image_t *src,
 
 }
 
+uint8_t iNeighboursLowerNotZero(image_t *img,
+                                uint16_t x,
+                                uint16_t y,
+                                uint8_t value,
+                                eConnected connected)
+{
+    //uint8_t iNeighboursFound = 0;
+    uint16_t lowest = 0xFF; //put it on highest value possible
+
+    if(img->data[y][x - 1] != 0 && img->data[y][x - 1] < value)
+    {
+        //iNeighboursFound++;
+        if(img->data[y][x-1] < lowest)
+        {
+            lowest = img->data[y][x- 1];
+        }
+    }
+    if(img->data[y][x + 1] != 0 && img->data[y][x + 1] < value)
+    {
+        // iNeighboursFound++;
+        if(img->data[y][x + 1] < lowest)
+        {
+            lowest = img->data[y][x + 1];
+        }
+    }
+    if(img->data[y + 1][x] != 0 && img->data[y + 1][x] < value)
+    {
+        //iNeighboursFound++;
+        if(img->data[y + 1][x] < lowest)
+        {
+            lowest = img->data[y + 1][x];
+        }
+    }
+    if(img->data[y - 1][x] != 0 && img->data[y - 1][x] < value)
+    {
+        // iNeighboursFound++;
+        if(img->data[y - 1][x] < lowest)
+        {
+            lowest = img->data[y - 1][x];
+        }
+    }
+
+    if(connected == EIGHT)
+    {
+
+        if(img->data[y - 1][x - 1] != 0 && img->data[y - 1][x - 1] < value)
+        {
+            // iNeighboursFound++;
+            if(img->data[y - 1][x - 1] < lowest)
+            {
+                lowest = img->data[y - 1][x - 1];
+            }
+        }
+        if(img->data[y + 1][x + 1] != 0 && img->data[y + 1][x + 1] < value)
+        {
+            //iNeighboursFound++;
+            if(img->data[y + 1][x + 1] < lowest)
+            {
+                lowest = img->data[y + 1][x + 1];
+            }
+        }
+        if(img->data[y - 1][x + 1] != 0 && img->data[y - 1][x + 1] < value)
+        {
+            //iNeighboursFound++;
+            if(img->data[y - 1][x + 1] < lowest)
+            {
+                lowest = img->data[y - 1][x + 1];
+            }
+        }
+        if(img->data[y + 1][x - 1] != 0 && img->data[y + 1][x - 1] < value)
+        {
+            // iNeighboursFound++;
+            if(img->data[y + 1][x - 1] < lowest)
+            {
+                lowest = img->data[y + 1][x - 1];
+            }
+        }
+    }
+    //return the lowest argument
+    return lowest;
+}
+
+uint32_t iLabelBlobsMethod2(image_t *src, // must be a binary image
+                            image_t *dst,
+                            eConnected connected)
+{
+    uint32_t blob_cnt = 0;
+    uint32_t iterations = 0;
+    uint32_t x,y;
+    uint16_t blob = 0;
+    uint8_t failed = 0;
+    uint32_t non_marked;
+    uint32_t width = src->width;
+    uint32_t height = src->height;
+    uint32_t npixels = width*height;
+    uint32_t iFound = 1;
+
+    //step 1, mark all blobs
+    vSetSelectedToValue(src,dst,1,255);
+
+
+    //step 2, verbind alle pixels met dezelfde laagste (maar geen 0) waarde
+    do{ //herhalen van RO->LB en LB->RO totdat er geen veranderingen meer zijn
+        //reset non_marked
+        //non_marked = npixels;//scan all pixels 2 times..
+        //scan LB->RO
+        iFound = 0;
+        for(y = 0; y < height; y++)
+        {
+            for(x = 0; x < width; x++)
+            {
+                //select marked pixels
+                if(dst->data[y][x] == 255)
+                {
+                    blob = iNeighboursLowerNotZero(dst,x,y,255,connected);
+                    if(blob < blob_cnt) //lowest neighbouringpixel
+                    {
+                        //blob pixel with neighbouring labels, label with lowest neighbour label
+                        dst->data[y][x] = blob;
+                        iFound++;
+                    }
+                    else
+                    {
+                        blob_cnt++;
+                        dst->data[y][x] = blob_cnt;
+                        iFound++;
+                    }
+                    if(blob_cnt >= 254) //too many blobs
+                    {
+                        return 0;
+                    }
+                }
+            }
+        }
+        //scan RO->LB
+        for(x = 0; x < width; x++)
+        {
+            for(y = 0; y < height; y++)
+            {
+                //select marked pixels
+                if(dst->data[y][x] == 255)
+                {
+                    blob = iNeighboursLowerNotZero(dst,x,y,255,connected);
+                    if(blob < blob_cnt) //lowest neighbouringpixel
+                    {
+                        //blob pixel with neighbouring labels, label with lowest neighbour label
+                        dst->data[y][x] = blob;
+                        iFound++;
+                    }
+                    else
+                    {
+                        dst->data[y][x] = blob_cnt++;
+                        iFound++;
+                    }
+                    if(blob_cnt >= 254) //too many blobs
+                    {
+                        return 0;
+                    }
+                }
+            }
+
+        }
+        if(iterations++ > 10000){
+            failed = 1; //infinite loop protection
+            break;
+        }
+
+    }while(iFound != 0);
+    //step 3: loop and set any non-zero pixels to lowest non-zero neighbour
+    //loop until no changes
+    // Step 3: Loop and set any non-zero pixels to lowest non-zero neighbour
+    // Loop until no changes
+    if(!failed){
+        do{
+            non_marked = npixels;
+            for(y = 0; y < height; y++)
+            {
+                for(x = 0; x < width; x++)
+                {
+                    // Select non-background pixels
+                    if(dst->data[y][x])
+                    {
+                        blob = iNeighboursLowerNotZero(dst,x,y,254,connected);
+                        if(dst->data[y][x] != blob)
+                        {
+                            // Label pixel with neighouring lower labels
+                            dst->data[y][x] = blob;
+                        }
+                        else
+                        {
+                            // Already labeled
+                            non_marked--;
+                        }
+                    }
+                    else
+                    {
+                        // Background
+                        non_marked--;
+                    }
+                }
+            }
+            if(non_marked){
+                for(x = 0; x < width; x++)
+                {
+                    for(y = 0; y < height; y++)
+                    {
+                        // Select non-background pixels
+                        if(dst->data[y][x]){
+                            blob = iNeighboursLowerNotZero(dst,x,y,254,connected);
+                            if(dst->data[y][x] != blob)
+                            {
+                                // Label pixel with neighouring lower labels
+                                dst->data[y][x] = blob;
+                            }
+                            else
+                            {
+                                // Already labeled
+                                non_marked--;
+                            }
+                        }
+                        else
+                        {
+                            // Background
+                            non_marked--;
+                        }
+                    }
+                }
+            }
+        }while(non_marked);
+    }
+    //step 4: correct label numbers LB -> RO
+    if(!failed)
+    {
+        uint8_t listLabels[255];
+        uint32_t i = npixels;
+        uint32_t label = 1;
+        uint8_t pLabel = 0;
+        uint8_t *data= &dst->data[0][0];
+        blob_cnt = 0;
+        //create a list of used labels in array, automatically sorted due to the method of labeling
+        while(i--)
+        {
+            if(*data > pLabel)
+            {
+                listLabels[label++] = *data;
+                pLabel = *data;
+                blob_cnt++;
+            }
+            data++;
+        }
+        //replace pixels with array value to array index
+        i = blob_cnt;
+        label = 1;
+        while(i--)
+        {
+            vSetSelectedToValue(dst,dst,listLabels[label],label);
+            label++;
+        }
+    }
+
+    if(failed)
+    {
+        //vCopy(src,dst);
+        //return 0xFF;
+        return 0;
+
+    }
+    return blob_cnt;
+}
+
+
+uint8_t iCheckNeighbours(image_t *src,
+                         image_t *dst,
+                         int x,
+                         int y,
+                         int selected,
+                         int value,
+                         eConnected connected,
+                         eOperator op,
+                         eMethod method)
+{
+    if(op == AND)
+    {
+        if(method == EQUAL)
+        {
+            if(iNeighbourCount(src, x, y, selected, connected) == connected)
+            {
+                dst->data[x][y] = value;
+                return 1;
+            }
+        }
+        else if(method == HIGHER)
+        {
+            if(iNeighboursEqualOrHigher(src, x, y, selected, connected) == connected)
+            {
+                dst->data[x][y] = value;
+                return 1;
+            }
+        }
+    }
+    else if(op == OR)
+    {
+        if(method == EQUAL)
+        {
+            if(iNeighbourCount(src, x, y, selected, connected) > 0)
+            {
+                dst->data[x][y] = value;
+                return 1;
+            }
+        }
+        else if(method == HIGHER)
+        {
+            if(iNeighboursEqualOrHigher(src, x, y, selected, connected) > 0)
+            {
+                dst->data[x][y] = value;
+                return 1;
+            }
+        }
+    }
+    return 0;
+}
+
+void vSVN(image_t *src,
+          image_t *dst,
+          eConnected connected,
+          int blobNumber,
+          int selected,
+          int value,
+          eOperator op,
+          eMethod method)
+{
+    int i, j;
+    int iMax = dst->width;
+    int iFound;
+    do
+    {
+        iFound = 0;
+        for(i = 1; i < iMax; i++)
+        {
+            for(j = 1; j < dst->height; j++)
+            {
+                int x = j;
+                int y = i;
+                if(dst->data[x][y] == blobNumber)
+                {
+                    iFound += iCheckNeighbours(src, dst, x, y, selected, value, connected, op, method);
+                }
+                x = dst->height - j;
+                y = dst->width - i;
+                if(dst->data[x][y] == blobNumber)
+                {
+                    iFound += iCheckNeighbours(src, dst, x, y, selected, value, connected, op, method);
+                }
+            }
+        }
+        iMax = dst->height;
+        for(j = 1; j < iMax; j++)
+        {
+            for(i = 1; i < dst->width; i++)
+            {
+                int x = j;
+                int y = i;
+                if(dst->data[x][y] == blobNumber)
+                {
+                    iFound += iCheckNeighbours(src, dst, x, y, selected, value, connected, op, method);
+                }
+                x = dst->height - j;
+                y = dst->width - i;
+                if(dst->data[x][y] == blobNumber)
+                {
+                    iFound += iCheckNeighbours(src, dst, x, y, selected, value, connected, op, method);
+                }
+            }
+        }
+    }
+    while(iFound != 0);
+}
+
+
+
+uint32_t iLabelBlobsMethod3(image_t *src, // must be a binary image
+                            image_t *dst,
+                            eConnected connected)
+{
+    int blobCounter = 0;
+    int i = dst->height * dst->width;
+    uint8_t *s = (uint8_t *)dst->data;
+    //vSetRangeToValue(src,dst,1,254,255);
+    //vSetSelectedsToValue(src, dst, 1, 254, 255); //used to be able to relabel a labeled image
+    vSetSelectedToValue(src,dst,1,255);
+    do
+    {
+        if(*s == 255)
+        {
+            blobCounter++;
+            *s = blobCounter;
+            vSVN(dst, dst, connected, 255, blobCounter, blobCounter, OR, EQUAL);
+            if(blobCounter >= MAXBLOBS)
+            {
+                return blobCounter;
+            }
+        }
+        s++;
+    }
+    while(i-- > 0);
+    return blobCounter;
+}
+
+
+
+
+
 // ----------------------------------------------------------------------------
 uint32_t iLabelBlobs(image_t *src, // must be a binary image
                      image_t *dst,
                      eConnected connected)
 {
+
 
     vSetSelectedToValue(src,dst,1,255);
 
@@ -4114,9 +4560,13 @@ uint32_t iLabelBlobs(image_t *src, // must be a binary image
     for(y=1; y < dst->height; y++){
         for(x=1; x < dst->width; x++){
             if(dst->data[y][x] == 255){
+                rCount = 0;
                 dst->data[y][x] = blobcount;
                 iFillBlob(dst,x,y,255,blobcount,connected);
                 blobcount++;
+                if(blobcount > 253){
+                    break;
+                }
             }
         }
     }
@@ -4164,11 +4614,9 @@ void vBlobAnalyse(image_t *img,
                   const uint8_t blobcount,
                   blobinfo_t *pBlobInfo)
 {
-    register uint32_t x,y;
-    register uint8_t tmpBlob;
-    register uint8_t neighbours;
-    const double sqrt2 = 1.4142135623;
-    const double sqrt5 = 2.2360679774;
+    uint32_t x,y;
+    uint8_t tmpBlob;
+
 
     for(x=0; x < blobcount; x++){
         pBlobInfo[x].nof_pixels = 0;
@@ -4214,18 +4662,45 @@ void vBlobAnalyse(image_t *img,
 void vBlobBoundingCornerDetect(image_t *img, xy_info *xy_locs,
                                uint8_t b,
                                blobinfo_t *pBlobInfo){
-    register uint32_t i;
+    register uint32_t i, collision_count = 0;
     u_int32_t cornerC[4] = {0 ,0 , 0 ,0};
+
+    if(pBlobInfo->max_x > img->width ||
+            pBlobInfo->max_y > img->height ||
+            pBlobInfo->min_x > img->width ||
+            pBlobInfo->min_y > img->height){
+        pBlobInfo->nof_corners = 0;
+        return;
+    }
+
 
     xy_locs[0].min_x = img->width;
     xy_locs[0].max_x = 0;
+    xy_locs[0].min_y = img->height;
+    xy_locs[0].max_y = 0;
+
     xy_locs[1].min_x = img->width;
     xy_locs[1].max_x = 0;
+    xy_locs[1].min_y = img->height;
+    xy_locs[1].max_y = 0;
+
+    xy_locs[2].min_x = img->width;
+    xy_locs[2].max_x = 0;
     xy_locs[2].min_y = img->height;
     xy_locs[2].max_y = 0;
-    xy_locs[3].min_y = img->height;
-    xy_locs[3].max_y = 0;
 
+
+    xy_locs[3].min_x = img->width;
+    xy_locs[3].max_x = 0;
+    xy_locs[2].min_y = img->height;
+    xy_locs[2].max_y = 0;
+
+
+
+    // ----
+    //
+    //
+    //
     for(i = pBlobInfo->min_x; i <= pBlobInfo->max_x; i++)
     {
         if(img->data[pBlobInfo->min_y][i] == b){
@@ -4239,45 +4714,63 @@ void vBlobBoundingCornerDetect(image_t *img, xy_info *xy_locs,
             xy_locs[0].min_y = pBlobInfo->min_y;
             xy_locs[0].max_y = pBlobInfo->min_y;
             cornerC[0] = 1;
+            collision_count++;
         }
     }
 
-    for(i = pBlobInfo->min_x; i <= pBlobInfo->max_x; i++){
-        if(img->data[pBlobInfo->max_y][i] == b){
-            img->data[pBlobInfo->max_y][i] = 70;
-            if(i < xy_locs[1].min_x){
-                xy_locs[1].min_x = i;
-            }
-            if(i > xy_locs[1].max_x){
-                xy_locs[1].max_x = i;
-            }
-            xy_locs[1].min_y = pBlobInfo->max_y;
-            xy_locs[1].max_y = pBlobInfo->max_y;
-            cornerC[1] = 1;
-        }
-    }
 
-    for(i = pBlobInfo->min_y; i <= pBlobInfo->max_y; i++)
-    {
-        if(img->data[i][pBlobInfo->min_x] == b){
-            img->data[i][pBlobInfo->min_x] = 70;
-            xy_locs[2].min_x = pBlobInfo->min_x;
-            xy_locs[2].max_x = pBlobInfo->min_x;
-            if(i < xy_locs[2].min_y){
-                xy_locs[2].min_y = i;
-            }
-            if(i > xy_locs[2].max_y){
-                xy_locs[2].max_y = i;
-            }
-            cornerC[2] = 1;
-        }
-    }
+    //      |
+    //      |
+    //      |
+    //      |
     for(i = pBlobInfo->min_y; i <= pBlobInfo->max_y; i++)
     {
         if(img->data[i][pBlobInfo->max_x] == b){
             img->data[i][pBlobInfo->max_x] = 70;
-            xy_locs[3].min_x = pBlobInfo->max_x;
-            xy_locs[3].max_x = pBlobInfo->max_x;
+            xy_locs[1].min_x = pBlobInfo->max_x;
+            xy_locs[1].max_x = pBlobInfo->max_x;
+            if(i < xy_locs[1].min_y){
+                xy_locs[1].min_y = i;
+            }
+            if(i > xy_locs[1].max_y){
+                xy_locs[1].max_y = i;
+            }
+            cornerC[1] = 1;
+            collision_count++;
+        }
+    }
+
+    //
+    //
+    //
+    //----
+    for(i = pBlobInfo->min_x; i <= pBlobInfo->max_x; i++){
+        if(img->data[pBlobInfo->max_y][i] == b){
+            img->data[pBlobInfo->max_y][i] = 70;
+            if(i < xy_locs[2].min_x){
+                xy_locs[2].min_x = i;
+            }
+            if(i > xy_locs[2].max_x){
+                xy_locs[2].max_x = i;
+            }
+            xy_locs[2].min_y = pBlobInfo->max_y;
+            xy_locs[2].max_y = pBlobInfo->max_y;
+            cornerC[2] = 1;
+            collision_count++;
+        }
+    }
+
+
+    // |
+    // |
+    // |
+    // |
+    for(i = pBlobInfo->min_y; i <= pBlobInfo->max_y; i++)
+    {
+        if(img->data[i][pBlobInfo->min_x] == b){
+            img->data[i][pBlobInfo->min_x] = 70;
+            xy_locs[3].min_x = pBlobInfo->min_x;
+            xy_locs[3].max_x = pBlobInfo->min_x;
             if(i < xy_locs[3].min_y){
                 xy_locs[3].min_y = i;
             }
@@ -4285,10 +4778,23 @@ void vBlobBoundingCornerDetect(image_t *img, xy_info *xy_locs,
                 xy_locs[3].max_y = i;
             }
             cornerC[3] = 1;
+            collision_count++;
         }
     }
 
+
     pBlobInfo->nof_corners = cornerC[0] + cornerC[1] + cornerC[2] + cornerC[3];
+
+    if(collision_count > (pBlobInfo->width + pBlobInfo->height)){
+        xy_locs[0].min_x = pBlobInfo->min_x;
+        xy_locs[0].min_y = pBlobInfo->min_y;
+        xy_locs[1].max_x = pBlobInfo->max_x;
+        xy_locs[1].min_y = pBlobInfo->min_y;
+        xy_locs[2].max_x = pBlobInfo->max_x;
+        xy_locs[2].max_y = pBlobInfo->max_y;
+        xy_locs[3].min_x = pBlobInfo->min_x;
+        xy_locs[3].max_y = pBlobInfo->max_y;
+    }
 
     /*img->data[xy_locs[0].y][xy_locs[0].x] = 70;
     img->data[xy_locs[1].y][xy_locs[1].x] = 70;
@@ -4401,6 +4907,12 @@ void iFillBlob(image_t *img,
                uint8_t value,
                uint8_t fill,
                eConnected connected){
+
+    rCount++;
+
+    if(rCount >= 80000){
+        return;
+    }
 
     if(img->data[y-1][x] == value){
         img->data[y-1][x] = fill;

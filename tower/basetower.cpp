@@ -12,10 +12,12 @@ baseTower::baseTower(qreal x, qreal y, QList<baseEnemy*> *enemies, QGraphicsItem
 {
     this->enemies = enemies;
     setPos(x,y);
-    this->setBrush(QBrush(QColor(255,255,255)));
+    this->setBrush(QBrush(QColor(0,0,0)));
     this->setVisible(true);
+    this->setPen(Qt::NoPen);
 
     rangeEllipse = new QGraphicsEllipseItem(this);
+    rangeEllipse->setPen(QPen(Qt::white));
 
     setRange(128);
 
@@ -44,6 +46,7 @@ void baseTower::setRange(qreal range){
     rangeRect.setWidth(range*2);
     rangeRect.setHeight(range*2);
     rangeRect.moveCenter(this->rect().center());
+
     rangeEllipse->setRect(rangeRect);
 }
 

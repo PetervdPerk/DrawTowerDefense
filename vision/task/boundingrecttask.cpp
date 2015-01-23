@@ -60,12 +60,23 @@ void vision::task::boundingRectTask::process(Mat image){
     if(ok) {
         if(biggestRect > 100000) {
             qDebug() << "Biggest rect " << biggestRect;
-            QRect roi(boundRect[biggestRectId].tl().x,
-                      boundRect[biggestRectId].tl().y,
-                      boundRect[biggestRectId].size().width,
-                      boundRect[biggestRectId].size().height);
+            if(!manual){
+                QRect roi(boundRect[biggestRectId].tl().x,
+                          boundRect[biggestRectId].tl().y,
+                          boundRect[biggestRectId].size().width,
+                          boundRect[biggestRectId].size().height);
 
-            emit roiRect(roi);
+                emit roiRect(roi);
+            } else {
+                QRect manROI;
+                manROI.setX(65);
+                manROI.setY(135);
+                manROI.setWidth(470);
+                manROI.setHeight(328);
+                setROI(manROI);
+
+                emit roiRect(manROI);
+            }
         }
     }
 
@@ -74,6 +85,13 @@ void vision::task::boundingRectTask::process(Mat image){
 void vision::task::boundingRectTask::setOk(){
     ok = true;
 }
+
+void vision::task::boundingRectTask::setOkManual(){
+    ok = true;
+    manual = true;
+}
+
+
 
 Mat vision::task::boundingRectTask::getProcessedImage(){
     //      toggle = !toggle;

@@ -26,6 +26,7 @@ vision::visionManager::visionManager(MainWindow *window, QObject *parent) : QObj
     QObject::connect(glyphTask, SIGNAL(glyphLoc(QPointF,int)), this, SIGNAL(glyphLoc(QPointF,int)) ); //Pass glyphLoc through
     QObject::connect(markerTask, SIGNAL(glyphLoc(QPointF,int)), this, SIGNAL(glyphLoc(QPointF,int)) ); //Pass glyphLoc through
     QObject::connect(glyphTask, SIGNAL(glyphLoc(QPointF,int)), this, SLOT(glyphLocSlot(QPointF,int)) );
+    QObject::connect(markerTask, SIGNAL(glyphLoc(QPointF,int)), this, SLOT(glyphLocSlot(QPointF,int)) );
     QObject::connect(lineTask, SIGNAL(lineDetected(QPolygonF)), this, SLOT(lineFound(QPolygonF)) );
     QObject::connect(rectTask, SIGNAL(roiRect(QRect)), this, SLOT(setROI(QRect)));
 }
@@ -168,13 +169,17 @@ void vision::visionManager::enableView(){
     view->addLayoutToVBOX(gainBox);
 
     QVBoxLayout *btnBox = new QVBoxLayout();
-    QPushButton *btnCalibrate = new QPushButton("Calibrate");
+
+    QPushButton *btnManCalibrate = new QPushButton("Manual Calibrate");
+    btnBox->addWidget(btnManCalibrate);
+
+    QPushButton *btnCalibrate = new QPushButton("Auto Calibrate");
     btnBox->addWidget(btnCalibrate);
 
     QPushButton *btnStart = new QPushButton("Force start game");
     btnBox->addWidget(btnStart);
 
-    QPushButton *btnSwitch = new QPushButton("Switch detection method");
+    QPushButton *btnSwitch = new QPushButton("Switchs method");
     btnBox->addWidget(btnSwitch);
 
     QCheckBox *imageBox = new QCheckBox("Show video");
@@ -186,6 +191,7 @@ void vision::visionManager::enableView(){
 
 
     QObject::connect(btnCalibrate, SIGNAL(clicked()), rectTask, SLOT(setOk()));
+    QObject::connect(btnManCalibrate, SIGNAL(clicked()), rectTask, SLOT(setOkManual()));
     QObject::connect(btnStart, SIGNAL(clicked()), this, SLOT(forceStartGame()) );
     QObject::connect(btnSwitch, SIGNAL(clicked()), this, SLOT(switchDetectMethod()) );
     QObject::connect(threshSlider, SIGNAL(valueChanged(int)), rectTask, SLOT(setThreshold(int)) );
@@ -226,8 +232,9 @@ void vision::visionManager::switchDetectMethod(){
 
 void vision::visionManager::lineFound(QPolygonF line){
     QObject::disconnect(glyphTask, SIGNAL(glyphLoc(QPointF,int)), this, SLOT(glyphLocSlot(QPointF,int)) );
-    proc->setProcessTask(glyphTask);
-    //proc->setProcessTask(markerTask);
+    QObject::disconnect(markerTask, SIGNAL(glyphLoc(QPointF,int)), this, SLOT(glyphLocSlot(QPointF,int)) );
+    //proc->setProcessTask(glyphTask);
+    proc->setProcessTask(markerTask);
     emit lineDetected(line);
 }
 
@@ -235,6 +242,7 @@ void vision::visionManager::setROI(QRect roi){
     this->roi = roi;
     glyphTask->setROI(roi);
     lineTask->setROI(roi);
+    markerTask->setROI(roi);
     proc->setProcessTask(glyphTask);
     emit startDraw();
 }
