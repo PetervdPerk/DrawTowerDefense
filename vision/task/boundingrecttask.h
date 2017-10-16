@@ -4,6 +4,8 @@
 #include "abstractprocesstask.h"
 #include <QDebug>
 #include <QRect>
+#include <vector>
+using namespace std;
 
 namespace vision
 {

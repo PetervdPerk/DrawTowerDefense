@@ -82,7 +82,7 @@ FORMS    += mainwindow.ui \
 
 
 unix {
-    LIBS += -lopencv_core  -lopencv_highgui -lopencv_imgproc -laruco -lv4l2
+    LIBS += -lopencv_core  -lopencv_highgui -lopencv_imgproc -lopencv_videoio -laruco -lv4l2
 }
 win32 {
 INCLUDEPATH += "C:\opencv\build\include"

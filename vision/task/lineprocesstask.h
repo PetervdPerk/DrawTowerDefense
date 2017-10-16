@@ -3,6 +3,8 @@
 
 #include "abstractprocesstask.h"
 #include <QPolygonF>
+#include <vector>
+using namespace std;
 
 namespace vision
 {
