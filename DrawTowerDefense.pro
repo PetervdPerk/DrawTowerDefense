@@ -8,7 +8,7 @@ QT       += core gui
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets opengl
 
-TARGET = MassacreTD
+TARGET = DrawTowerDefense
 TEMPLATE = app
 
 CONFIG += c++11
@@ -117,7 +117,7 @@ HEADERS  += vision/ov_video_capture.h \
 win32:DEFINES  += WIN32
 unix:DEFINES     += UNIX
 
-target.path = /home/root/MassacreTD
+target.path = /home/root/DrawTowerDefense
 INSTALLS += target
 
 OTHER_FILES += \
